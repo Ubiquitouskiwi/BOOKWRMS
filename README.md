@@ -3,6 +3,7 @@
 This is a home library system to keep track who you lend books to as well as keep track of what books you have. BOOKWORMS stands for  "Becca's Online Organized Knowledge Warehouse and Resource Management System."
 
 ## Dev Setup
+>Tutorial that was followed: https://flask.palletsprojects.com/en/2.2.x/tutorial/layout/
 
 1. Install python 3.11 from the Micrsoft store:
 
