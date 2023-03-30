@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Books In Library{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('home.add_book') }}">Add Book</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% for book in books %}
+        <article class="post">
+            <header>
+                <div>
+                    <h1>{{ book['title'] }}</h1>
+                    <div class="about">By: {{ book['first_name'] }} {{ book['last_name']}}</div>
+                    <div class="about">ISBN: {{ book['isbn'] }}</div>
+                </div>
+                {% if g.user['is_admin'] %}
+                    <a class="action" href="{{ url_for('home.edit_book', id=book['id']) }}">Edit Book</a>
+                {% endif %}                
+            </header>
+            <img src="{{ book['illustration_url'] }}" alt="Book Cover" width="100" height="200">
+        </article>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,41 @@
+DROP TABLE IF EXISTS authors;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS checkout_log;
+
+CREATE TABLE authors (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE books (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    author_id INTEGER NOT NULL,
+    isbn INTEGER NOT NULL,
+    illustration_url TEXT NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (author_id) REFERENCES authors (id)
+);
+
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    library_card_number INTEGER NOT NULL,
+    is_admin BOOLEAN NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE checkout_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    checkout_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expected_return TIMESTAMP,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (book_id) REFERENCES books (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
