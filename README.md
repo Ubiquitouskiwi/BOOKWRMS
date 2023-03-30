@@ -7,15 +7,13 @@ This is a home library system to keep track who you lend books to as well as kee
 
 1. Install python 3.11 from the Micrsoft store:
 
-```
-https://www.microsoft.com/store/productId/9NRWMJP3717K
-```
+>https://www.microsoft.com/store/productId/9NRWMJP3717K
+
 
 2. Install Visual Studio Code (vs code) from here:
 
-```
-https://code.visualstudio.com/
-```
+>https://code.visualstudio.com/
+
 
 3. Create a folder somewhere on your local machine that will house this project and virtual environment (venv). Ex:
 
