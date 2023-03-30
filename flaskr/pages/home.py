@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 
 from flaskr.pages.auth import login_required
 from flaskr.data_store.db import get_db
+from ..helpers.openlibrary_engine import OpenLibraryClient
 
 bp = Blueprint('home', __name__)
 
@@ -136,9 +137,21 @@ def delete_book(id):
 @bp.route('/<int:id>/book_details', methods=[ 'GET'])
 def book_details(id):
     book = get_book(id)
+    book_object = {}
     error = None
 
     if book is None:
         error = 'Book ID not found'
 
-    return render_template('home/book_details.html', book=book)
+    for key in book.keys():
+        book_object[key] = book[key]
+
+    book_client = OpenLibraryClient()
+    
+    found_book = book_client.search_isbn(isbn=book['isbn'])
+    if found_book is not None:
+        book_object['summary'] = found_book.description
+    else:
+        book_object['summary'] = 'No summary could be found for this book on OpenLibrary.com'
+
+    return render_template('home/book_details.html', book=book_object)
