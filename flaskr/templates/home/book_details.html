@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+    <h1>{% block title %}{{ book['title'] }}{% endblock %}</h1>
+    {% if g.user %}
+        <a class="action" href="{{ url_for('home.edit_book', id = book['id']) }}">Edit Book</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <img src="{{ book['illustration_url'] }}" width="300" height="600" alt="Book Cover: {{ book['title'] }}">
+        <h1>{{ book['title'] }}</h1>
+        <div class="about">By: {{ book['first_name'] }} {{ book['last_name']}}</div>
+        <div class="about">ISBN: {{ book['isbn'] }}</div></div>
+    </div>
+{% endblock %}

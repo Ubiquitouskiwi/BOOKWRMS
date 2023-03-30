@@ -132,3 +132,13 @@ def delete_book(id):
         )
         db.commit()
         return redirect(url_for('home.index'))
+    
+@bp.route('/<int:id>/book_details', methods=[ 'GET'])
+def book_details(id):
+    book = get_book(id)
+    error = None
+
+    if book is None:
+        error = 'Book ID not found'
+
+    return render_template('home/book_details.html', book=book)
