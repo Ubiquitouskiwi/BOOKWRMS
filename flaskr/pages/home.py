@@ -148,9 +148,13 @@ def book_details(id):
 
     book_client = OpenLibraryClient()
     
-    found_book = book_client.search_isbn(isbn=book['isbn'])
-    if found_book is not None:
-        book_object['summary'] = found_book.description
+    work = book_client.search_isbn(isbn=book['isbn'])
+    if work is not None:
+        book_object['summary'] = work.description
+        author = book_client.get_author_from_work(work)
+        book_object['author'] = author.name
+        if len(author.links) > 0:
+            book_object['author_links'] = author.links
     else:
         book_object['summary'] = 'No summary could be found for this book on OpenLibrary.com'
 
