@@ -1,48 +1,56 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}{{ book['title'] }}{% endblock %}</h1>
-    {% if g.user %}
-        <a class="action" href="{{ url_for('home.edit_book', id = book['id']) }}">Edit Book</a>
-    {% endif %}
+<div class="text-center">
+    <h1 class="display-1">{% block title %}{{ book['title'] }}{% endblock %}</h1>
+</div>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        <br>
-        <img src="{{ book['illustration_url'] }}" width="200" height="300" alt="Book Cover: {{ book['title'] }}">
-        <br>
-        <div class="about">By: {{ book['first_name'] }} {{ book['last_name']}}</div>
-        <div class="about">ISBN: {{ book['isbn'] }}</div></div>
-        <p>Author Links:</p>
-        <ul>
+<div class="text-center">
+    <img src="{{ book['illustration_url'] }}" width="200" height="300" alt="Book Cover: {{ book['title'] }}">
+    <br>
+    <div class="about">By: {{ book['first_name'] }} {{ book['last_name']}}</div>
+    <div class="about">ISBN: {{ book['isbn'] }}</div>
+    {% if g.user %}
+    <a class="lead" href="{{ url_for('home.edit_book', id = book['id']) }}">Edit Book</a>
+    {% endif %}
+</div>
+<div>
+    <p>Author Links:</p>
+    <ul>
         {% if book['author_links'] %}
-            {% for link in book['author_links'] %}
-                <li><a href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
-            {% endfor %}
+        {% for link in book['author_links'] %}
+        <li><a href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
+        {% endfor %}
         {% endif %}
-        </ul> 
-        <hr>     
-        <h4>Summary</h4>  
-        <p class="summary">{{ book['summary'] }}</p>
-        <br>
-        <hr>
-        <h4>Checkout History</h4>
-        <div>            
-            <table>
-                <tr>
-                    <th>User</th>
-                    <th>Returned</th>
-                    <th>Checkout Date</th>
-                    <th>Checkin Date</th>
-                </tr>
-                <tr>
-                    <td>Tyler Starling</td>
-                    <td>False</td>
-                    <td>March 15, 2023</td>
-                    <td>-</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    </ul>
+</div>
+<hr>
+<div>
+    <h4>Summary</h4>
+    <p class="summary">{{ book['summary'] }}</p>
+    <br>
+</div>
+<div>
+    <h4>Checkout History</h4>
+
+    <table class="table">
+        <tr>
+            <th scope="col">User</th>
+            <th scope="col">Returned</th>
+            <th scope="col">Checkout Date</th>
+            <th scope="col">Checkin Date</th>
+        </tr>
+        <tr>
+            <td>Tyler Starling</td>
+
+            <td><i class="bi-x-lg"></td>
+            <td>March 15, 2023</td>
+            <td>-</td>
+        </tr>
+    </table>
+</div>
+
+
 {% endblock %}

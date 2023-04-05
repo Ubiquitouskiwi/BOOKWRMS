@@ -6,12 +6,21 @@
 
 {% block content %}
   <form method="post">
-    <label for="title">Title</label>
-    <input name="title" id="title" required>
-    <label for="isbn">ISBN</label>
-    <input name="isbn" id="isbn">
-    <label for="illustration_url">Book Cover Url</label>
-    <input name="illustration_url" id="illusration_url" required>
-    <input type="submit" value="Save">
+    <div class="form-floating mb-3">   
+      <label  for="title">Title</label>   
+      <input placeholder="eg. Of Mice and Men" class="form-control" name="title" id="title" required>      
+    </div>
+    <div class="form-floating mb-3">
+      <label  for="isbn">ISBN</label>
+      <input placeholder="eg. 978-0140177398" class="form-control" name="isbn" id="isbn">
+    </div>
+    <div class="form-floating mb-3">
+      <label  for="illustration_url">Book Cover Url</label>
+      <input placeholder="eg. https://covers.openlibrary.org/b/id/12902964-L.jpg" class="form-control" name="illustration_url" id="illusration_url" required>
+    </div>
+    <div class="form-floating mb-3">
+      <input class="btn btn-success" type="submit" value="Save">
+    </div>     
   </form>
+
 {% endblock %}
