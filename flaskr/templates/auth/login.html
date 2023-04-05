@@ -6,10 +6,16 @@
 
 {% block content %}
   <form method="post">
-    <label for="first_name">First Name</label>
-    <input name="first_name" id="first_name" required>
-    <label for="last_name">Last Name</label>
-    <input  name="last_name" id="last_name" required>
-    <input type="submit" value="Log In">
+    <div class="mb-3">
+      <label class="form-label" for="first_name">First Name</label>
+      <input class="form-control" name="first_name" id="first_name" required>
+      <label class="form-label" for="last_name">Last Name</label>
+      <input class="form-control"  name="last_name" id="last_name" required>
+      <br>
+      <a href="{{ url_for('auth.register') }}">Register</a>
+      <hr>
+      <input class="btn btn-success" type="submit" value="Log In">
+      <input class="btn btn-danger" type="button" onClick="window.location.href='/'; return false;" value="Cancel"
+    </div>
   </form>
 {% endblock %}

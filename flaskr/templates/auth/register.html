@@ -1,19 +1,28 @@
 {% extends 'base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Register{% endblock %}</h1>
+<h1>{% block title %}Register{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
+
+<div class="mb-3">
     <form method="post">
-        <label for="first_name">First Name</label>
-        <input name="first_name" id="first_name" required>
-        <label for="last_name">Last Name</label>
-        <input name="last_name" id="last_name" required>
-        <label for="library_card_number">Library Card Number</label>        
-        <input name="library_card_number" id="library_card_number" required>
-        <label for="is_admin">Admin User</label>
-        <input type="radio" name="is_admin" id="is_admin">
-        <input type="submit" value="Register">
+        <label class="form-label" for="first_name">First Name</label>
+        <input class="form-control" name="first_name" id="first_name" required>
+        <label class="form-label" for="last_name">Last Name</label>
+        <input class="form-control" name="last_name" id="last_name" required>
+        <label class="form-label" for="library_card_number">Library Card Number</label>
+        <input class="form-control" name="library_card_number" id="library_card_number" required>
+        <div class="form-check">          
+            <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin">
+            <label class="form-check-label" for="is_admin">Admin</label>
+        </div> 
+        <br>    
+        <a href="{{ url_for('auth.login') }}">Log In</a>   
+        <hr>
+        <input class="btn btn-success" type="submit" value="Register">
+        <input class="btn btn-danger" type="button" onclick="window.location.href = '/'; return false;" value="Cancel">
     </form>
+</div>
 {% endblock %}

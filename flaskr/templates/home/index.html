@@ -2,13 +2,10 @@
 
 {% block header %}
 <div class="jumbotron text-center">
-    <h1 class="display-4">{% block title %}Current Library{% endblock %}</h1>
     {% if g.user %}
-    <div class="lead">
-        <a href="{{ url_for('home.add_book') }}">Add Book</a>
-        <span>|</span>
-        <a href="{{ url_for('home.add_book') }}">Add Author</a>
-    </span>
+    <h1 class="display-4">{{ g.user['first_name'].capitalize() }}'s  Library</h1>
+    {% else %}
+    <h1 class="display-4">{% block title %}Book Repository{% endblock %}</h1>
     {% endif %}
 </div>
 {% endblock %}
@@ -16,7 +13,7 @@
 {% block content %}
 <div class="row">
     {% for book in books %}
-    <div class="col-xl-3" style="margin-bottom:20px;">
+    <div class="col-md-3" style="margin-bottom:20px;">
         <div class="card">           
             <img class="card-img-top img-thumbnail" src="{{ book['illustration_url'] }}" alt="Book Cover" >            
             <div class="card-body"> 
@@ -33,8 +30,6 @@
             </div>
         </div>
     </div>
-
     {% endfor %}
-
 </div>
 {% endblock %}
