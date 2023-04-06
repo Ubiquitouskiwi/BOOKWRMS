@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Scanner{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="mb-3">    
+    <div id="qr-reader"></div>
+    <button class="btn btn-primary" id="startBtn" onclick="scanBarcode()">Open Camera</button>
+</div>
+{% endblock %}

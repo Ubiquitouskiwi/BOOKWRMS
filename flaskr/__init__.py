@@ -4,6 +4,7 @@ from flask import Flask
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+
     app.config.from_mapping(
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite')
@@ -22,6 +23,8 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    app.config['AERVER_NAME'] = '127.0.0.1'
+
     # Application pages
     @app.route('/hello')
     def home():
@@ -36,5 +39,8 @@ def create_app(test_config=None):
     from .pages import home
     app.register_blueprint(home.bp)
     app.add_url_rule('/', endpoint='index')
+
+    from .pages import scanner
+    app.register_blueprint(scanner.bp)
 
     return app

@@ -4,6 +4,7 @@
 <div class="jumbotron text-center">
     {% if g.user %}
     <h1 class="display-4">{{ g.user['first_name'].capitalize() }}'s  Library</h1>
+    <a class="lead" href="{{ url_for('scanner.scanner') }}">Checkout</a>
     {% else %}
     <h1 class="display-4">{% block title %}Book Repository{% endblock %}</h1>
     {% endif %}
