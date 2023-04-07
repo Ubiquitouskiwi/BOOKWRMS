@@ -30,9 +30,25 @@ C:\Users\{user}\Documents\PythonProjects
  ```
  >ps. the second venv above is the name of the virtual environment. it can be anything you like, but make sure you remember it
 
-6. Install all required libraries listed in the requirements.txt
+6. Activate virtual environment by running Activate.ps1 in the venv/Scripts/ folder. Ex:
 
-7. Run the flask app with this command
+```
+& venv/Scripts/Activate.ps1
+```
+
+7. Install all required libraries listed in the requirements.txt
+
+```
+pip install {python-library}
+```
+
+8. Initialize and create the local DB using command:
+
+```
+flask --app flaskr init-db
+```
+
+9. Run the flask app locally with this command
 
 ```
 flask --app flaskr run --debug
