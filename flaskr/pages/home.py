@@ -1,39 +1,36 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, current_app
 )
 from werkzeug.exceptions import abort
 
 from flaskr.pages.auth import login_required
+from flaskr.models.book import Book
 from flaskr.data_store.db import get_db
 from ..helpers.openlibrary_engine import OpenLibraryClient
 
 bp = Blueprint('home', __name__)
 
-def get_book(id):
-    book = get_db().execute(
-        '''
-        SELECT 
-                book.id, 
-                book.title, 
-                book.isbn, 
-                book.illustration_url,
-                author.first_name,
-                author.last_name
-            FROM
-                books book
-            JOIN
-                authors author
-            ON 
-                book.author_id = author.id
-            WHERE
-                book.id = ?
-        ''', [id]
-    ).fetchone()
+def get_book_api(isbn):
+    book_object = {}
+    db = get_db()
+    book_client = OpenLibraryClient()
+        
+    work = book_client.search_isbn(isbn=isbn)
+    if work is not None:
+        book_object['summary'] = work.description
+        book_object['']
+        author = book_client.get_author_from_work(work)
+        book_object['author'] = author.name
+        if len(author.links) > 0:
+            book_object['author_links'] = author.links
+    else:
+        book_object['summary'] = 'No summary could be found for this book on OpenLibrary.com'
 
-    if book is None:
-        abort(404, f'Book id {id} does not exist.')
-    
-    return book
+    db.execute(
+        '''
+        INSERT INTO books (title, isbn, illustration_url) VALUES (?, ?, ?)
+        ''', (book_object[''])
+    )
 
 @bp.route('/')
 def index():
@@ -136,26 +133,8 @@ def delete_book(id):
     
 @bp.route('/<int:id>/book_details', methods=[ 'GET'])
 def book_details(id):
-    book = get_book(id)
-    book_object = {}
-    error = None
+    with current_app.app_context():
+        book = Book()
+        book.inflate_by_id(id)    
 
-    if book is None:
-        error = 'Book ID not found'
-
-    for key in book.keys():
-        book_object[key] = book[key]
-
-    book_client = OpenLibraryClient()
-    
-    work = book_client.search_isbn(isbn=book['isbn'])
-    if work is not None:
-        book_object['summary'] = work.description
-        author = book_client.get_author_from_work(work)
-        book_object['author'] = author.name
-        if len(author.links) > 0:
-            book_object['author_links'] = author.links
-    else:
-        book_object['summary'] = 'No summary could be found for this book on OpenLibrary.com'
-
-    return render_template('home/book_details.html', book=book_object)
+        return render_template('home/book_details.html', book=book)

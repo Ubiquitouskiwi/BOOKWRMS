@@ -23,7 +23,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    app.config['AERVER_NAME'] = '127.0.0.1'
+    #app.config['SERVER_NAME'] = '127.0.0.1'
 
     # Application pages
     @app.route('/hello')
@@ -42,5 +42,7 @@ def create_app(test_config=None):
 
     from .pages import scanner
     app.register_blueprint(scanner.bp)
+
+    app.app_context().push()
 
     return app

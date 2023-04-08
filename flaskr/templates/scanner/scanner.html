@@ -5,8 +5,30 @@
 {% endblock %}
 
 {% block content %}
-<div class="mb-3">    
-    <div id="qr-reader"></div>
-    <button class="btn btn-primary" id="startBtn" onclick="scanBarcode()">Open Camera</button>
+<div class="mb-3">
+    <div >
+        <video class="img-thumbnail" id="video" ></video>
+    </div>
+    <div id="sourceSelectPanel">
+        <select id="sourceSelect" class="form-select">
+        </select>
+    </div>
+    <div>
+        <select class="form-select" id="decoding-style">
+            <option value="once">Decode Once</option>
+            <option value="continuously">Decode Continuously</option>
+        </select>
+    </div>
+    <div>
+        <button class="btn btn-primary" id="startButton">Start Scan</button>
+        <button class="btn btn-danger" id="resetButton">Reset Scan</button>
+    </div>
+    <div>
+        <pre><code id="result"></code></pre>
+    </div>
+
 </div>
+
+<script type="text/javascript" src="https://unpkg.com/@zxing/library@latest"></script>
+<script type="text/javascript" src="../../static/index.js"></script>
 {% endblock %}
