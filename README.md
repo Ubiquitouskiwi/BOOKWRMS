@@ -1,6 +1,6 @@
-# BOOKWORMS
+# BOOKWRMS
 
-This is a home library system to keep track who you lend books to as well as keep track of what books you have. BOOKWORMS stands for  "Becca's Online Organized Knowledge Warehouse and Resource Management System."
+This is a home library system to keep track who you lend books to as well as keep track of what books you have. BOOKWRMS stands for  "Becca's Online Organized Knowledge Warehouse and Resource Management System."
 
 ## Dev Setup
 >Tutorial that was followed: https://flask.palletsprojects.com/en/2.2.x/tutorial/layout/
@@ -28,7 +28,7 @@ C:\Users\{user}\Documents\PythonProjects
  ```
  python -m venv venv
  ```
- >ps. the second venv above is the name of the virtual environment. it can be anything you like, but make sure you remember it
+>ps. the second venv above is the name of the virtual environment. it can be anything you like, but make sure you remember it
 
 6. Activate virtual environment by running Activate.ps1 in the venv/Scripts/ folder. Ex:
 
@@ -54,3 +54,6 @@ flask --app flaskr init-db --dev true
 ```
 flask --app flaskr run --debug
 ```
+
+# Architecture
+![Architecture Diagram](https://github.com/Ubiquitouskiwi/BOOKWORMS/blob/master/doc_files/BOOKWORMS_architecture.drawio.svg)
