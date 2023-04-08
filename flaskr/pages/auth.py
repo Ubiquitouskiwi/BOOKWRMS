@@ -17,7 +17,7 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = get_db().execute(
-            'SELECT * FROM users WHERE id = ?', [user_id]
+            'SELECT * FROM user WHERE id = ?', [user_id]
         ).fetchone()
 
 @bp.route('/register', methods=['GET', 'POST'])
@@ -40,7 +40,7 @@ def register():
         if error is None:
             try:
                 db.execute(
-                    'INSERT INTO users (first_name, last_name, library_card_number, is_admin) values (?, ?, ?, ?)',
+                    'INSERT INTO user (first_name, last_name, library_card_number, is_admin) values (?, ?, ?, ?)',
                     (first_name, last_name, card_number, admin)
                 )
                 db.commit()

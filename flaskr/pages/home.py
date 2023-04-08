@@ -10,28 +10,6 @@ from ..helpers.openlibrary_engine import OpenLibraryClient
 
 bp = Blueprint('home', __name__)
 
-def get_book_api(isbn):
-    book_object = {}
-    db = get_db()
-    book_client = OpenLibraryClient()
-        
-    work = book_client.search_isbn(isbn=isbn)
-    if work is not None:
-        book_object['summary'] = work.description
-        book_object['']
-        author = book_client.get_author_from_work(work)
-        book_object['author'] = author.name
-        if len(author.links) > 0:
-            book_object['author_links'] = author.links
-    else:
-        book_object['summary'] = 'No summary could be found for this book on OpenLibrary.com'
-
-    db.execute(
-        '''
-        INSERT INTO books (title, isbn, illustration_url) VALUES (?, ?, ?)
-        ''', (book_object[''])
-    )
-
 @bp.route('/')
 def index():
     db = get_db()
@@ -45,9 +23,9 @@ def index():
                 author.first_name as first_name,
                 author.last_name as last_name
             FROM
-                books book
+                book book
             JOIN
-                authors author
+                author author
             ON 
                 book.author_id = author.id
             WHERE
@@ -90,7 +68,8 @@ def add_book():
 @bp.route('/<int:id>/edit_book', methods=['GET', 'POST'])
 @login_required
 def edit_book(id):
-    book = get_book(id)
+    book = Book()
+    book.inflate_by_id(id)
 
     if request.method == 'POST':
         title = request.form['title']
@@ -120,9 +99,10 @@ def edit_book(id):
 @bp.route('/<int:id>/delete_book', methods=['POST'])
 @login_required
 def delete_book(id):
-    book = get_book(id)
+    book = Book()
+    book.inflate_by_id(id)
     
-    if book is not None:
+    if book.id is not None:
         db = get_db()
         db.execute(
             'UPDATE books SET deleted = TRUE WHERE id = ?',

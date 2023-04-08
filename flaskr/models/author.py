@@ -14,7 +14,7 @@ class Author(BaseObject):
             SELECT
                 *
             FROM
-                authors
+                author
             WHERE
                 {0}
         """
@@ -24,7 +24,7 @@ class Author(BaseObject):
 
         query = """
             INSERT INTO
-                authors (first_name, last_name, olid)
+                author (first_name, last_name, olid)
             VALUES
                 (?, ?, ?)
             ON DUPLICATE KEY UPDATE 

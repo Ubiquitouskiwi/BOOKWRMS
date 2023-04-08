@@ -26,9 +26,16 @@ def init_db():
         db.executescript(f.read().decode('utf8'))
 
 @click.command('init-db')
-def init_db_command():
+@click.option('--dev', default=False)
+def init_db_command(dev):
     init_db()
     click.echo('Initialized the database.')
+
+    if dev:
+        db = get_db()
+        with current_app.open_resource('data_store/dev_data.sql') as f:
+            db.executescript(f.read().decode('utf8'))
+
 
 def init_app(app):
     app.teardown_appcontext(close_db)

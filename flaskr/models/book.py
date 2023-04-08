@@ -26,9 +26,9 @@ class Book(BaseObject):
                 auth.last_name as author_last_name,
                 auth.olid as author_olid
             FROM
-                books book
+                book book
             LEFT JOIN
-                authors auth
+                author auth
             ON 
                 book.author_id = auth.id
             WHERE 
@@ -42,7 +42,7 @@ class Book(BaseObject):
             self.db = get_db()
         query = """
                 INSERT INTO
-                    books (title, author_id, isbn, illustration_url)
+                    book (title, author_id, isbn, illustration_url)
                 VALUES
                     (?, ?, ?, ?)
                 ON DUPLICATE KEY UPDATE 
@@ -104,11 +104,11 @@ class Book(BaseObject):
                 u.last_name,
                 u.library_card_number,
                 cl.checkout_time,
-                cl.expected_return 
+                cl.checkout_duration
             FROM
                 checkout_log cl
             LEFT JOIN
-                users u
+                user u
             ON
                 cl.user_id = u.id 
             WHERE
@@ -118,7 +118,7 @@ class Book(BaseObject):
         query_params = [self.id]
         results = self._db.execute(query, query_params)
         for row in results:
-            calc_return = timedelta(days=30)
+            calc_return = timedelta(days=row['checkout_duration'])
             calc_return = row['checkout_time'] + calc_return
             returned = datetime.now() > calc_return
             checkout_log.append({
