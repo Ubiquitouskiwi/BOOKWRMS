@@ -54,3 +54,6 @@ flask --app flaskr init-db --dev true
 ```
 flask --app flaskr run --debug
 ```
+
+# Architecture
+![Architecture Diagram](https://github.com/Ubiquitouskiwi/BOOKWORMS/blob/master/doc_files/BOOKWORMS_architecture.drawio.svg)
