@@ -42,11 +42,12 @@ C:\Users\{user}\Documents\PythonProjects
 pip install {python-library}
 ```
 
-8. Initialize and create the local DB using command:
+8. Initialize and create and fill the local DB using command:
 
 ```
-flask --app flaskr init-db
+flask --app flaskr init-db --dev true
 ```
+>ps use this command for blank DB: ```flask --app flaskr init-db``` 
 
 9. Run the flask app locally with this command
 
