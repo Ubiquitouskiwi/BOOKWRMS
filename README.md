@@ -7,12 +7,12 @@ This is a home library system to keep track who you lend books to as well as kee
 
 1. Install python 3.11 from the Micrsoft store:
 
-    >https://www.microsoft.com/store/productId/9NRWMJP3717K
+>https://www.microsoft.com/store/productId/9NRWMJP3717K
 
 
 2. Install Visual Studio Code (vs code) from here:
 
-   >https://code.visualstudio.com/
+>https://code.visualstudio.com/
 
 
 3. Create a folder somewhere on your local machine that will house this project and virtual environment (venv). Ex:
@@ -28,7 +28,7 @@ C:\Users\{user}\Documents\PythonProjects
  ```
  python -m venv venv
  ```
-    >ps. the second venv above is the name of the virtual environment. it can be anything you like, but make sure you remember it
+>ps. the second venv above is the name of the virtual environment. it can be anything you like, but make sure you remember it
 
 6. Activate virtual environment by running Activate.ps1 in the venv/Scripts/ folder. Ex:
 
@@ -47,7 +47,7 @@ pip install {python-library}
 ```
 flask --app flaskr init-db --dev true
 ```
-    >ps use this command for blank DB: ```flask --app flaskr init-db``` 
+>ps use this command for blank DB: ```flask --app flaskr init-db``` 
 
 9. Run the flask app locally with this command
 
