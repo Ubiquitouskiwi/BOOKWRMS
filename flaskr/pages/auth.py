@@ -65,10 +65,10 @@ def login():
         if not first_name and not last_name and not card_number:            
             error = 'Must provide info to login.'
         elif not first_name and not last_name and card_number:
-            sql = 'SELECT * FROM users WHERE library_card_number = ?'
+            sql = 'SELECT * FROM user WHERE library_card_number = ?'
             params = (card_number)
         elif not card_number and first_name and last_name:
-            sql = 'SELECT * FROM users WHERE first_name = ? AND last_name = ?'
+            sql = 'SELECT * FROM user WHERE first_name = ? AND last_name = ?'
             params = (first_name, last_name)
         if sql is not None and params is not None:
             user = db.execute(

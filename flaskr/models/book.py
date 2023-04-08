@@ -103,8 +103,10 @@ class Book(BaseObject):
                 u.first_name,
                 u.last_name,
                 u.library_card_number,
-                cl.checkout_time,
-                cl.checkout_duration
+                cl.checkout_date,
+                cl.checkin_date,
+                cl.checkout_duration,
+                cl.renew_count
             FROM
                 checkout_log cl
             LEFT JOIN
@@ -112,20 +114,22 @@ class Book(BaseObject):
             ON
                 cl.user_id = u.id 
             WHERE
-                cl.deleted = 0
+                cl.deleted = false
                 AND cl.book_id = ?
         """
         query_params = [self.id]
         results = self._db.execute(query, query_params)
         for row in results:
             calc_return = timedelta(days=row['checkout_duration'])
-            calc_return = row['checkout_time'] + calc_return
-            returned = datetime.now() > calc_return
+            calc_return = row['checkout_date'] + calc_return
+            returned = row['checkin_date'] is None
             checkout_log.append({
                 'first_name': row['first_name'], 
                 'last_name': row['last_name'], 
                 'returned': returned, 
-                'checkout_time': row['checkout_time'], 
+                'checkout_date': row['checkout_date'],
+                'checkin_date': row['checkin_date'], 
+                'renew_count': row['renew_count'], 
                 'expected_return': calc_return})
         self.checkout_log = checkout_log
 

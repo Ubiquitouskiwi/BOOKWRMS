@@ -2,16 +2,16 @@
 
 {% block header %}
 <div class="text-center">
-    <h1 class="display-1">{% block title %}{{ book['title'] }}{% endblock %}</h1>
+    <h1 class="display-6">{% block title %}{{ book['title'] }}{% endblock %}</h1>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="text-center">
-    <img src="{{ book.cover_url }}" width="200" height="300" alt="Book Cover: {{ book['title'] }}">
+    <img src="{{ book.cover_url }}" width="200" height="300" alt="Book Cover: {{ book.title }}">
     <br>
     <div class="about">By: {{ book.author.first_name }} {{ book.author.last_name}}</div>
-    <div class="about">ISBN: {{ book['isbn'] }}</div>
+    <div class="about">ISBN: {{ book.isbn }}</div>
     {% if g.user %}
     <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a>
     {% endif %}
@@ -40,20 +40,28 @@
             <th scope="col">User</th>
             <th scope="col">Returned</th>
             <th scope="col">Checkout Date</th>
-            <th scope="col">Checkin Date</th>
+            <th scope="col">Check In Date</th>
+            <th scope="col">Expected Return Date</th>
+            <th scope="col">Times Renewed</th>
         </tr>
-        {% for checkout in book.checkout_log %}
-        <tr>
-            <td>{{ checkout['first_name'] + " " + checkout['last_name'] }}</td>
-            {% if checkout['returned'] %}
-                <td><i class="bi-x-lg"></td>
-            {% else %}
-                <td><i class="bi-check-lg"></i></td>
-            {% endif %}
-            <td>{{ checkout['checkout_time'] }}</td>
-            <td>{{ checkout['expected_return'] }} </td>
-        </tr>
-        {% endfor %}
+        {% if book.checkout_log %}
+            {% for checkout in book.checkout_log %}
+            <tr>
+                <td>{{ checkout['first_name'] + " " + checkout['last_name'] }}</td>
+                {% if checkout['returned'] %}
+                    <td><i class="bi-x-lg"></td>
+                {% else %}
+                    <td><i class="bi-check-lg"></i></td>
+                {% endif %}
+                <td>{{ checkout['checkout_date'] }}</td>
+                <td>{{ checkout['checkin_date'] }}</td>
+                <td>{{ checkout['expected_return'] }} </td>
+                <td>{{ checkout['renew_count'] }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <p>No checkout history.</p>
+        {% endif %}
     </table>
 </div>
 
