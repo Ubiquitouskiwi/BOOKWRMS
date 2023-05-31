@@ -17,23 +17,38 @@ This is a home library system to keep track who you lend books to as well as kee
 
 3. Create a folder somewhere on your local machine that will house this project and virtual environment (venv). Ex:
 
-```
+Windows:
+```Windows
 C:\Users\{user}\Documents\PythonProjects
+```
+Linux:
+```Linux
+/home/Documents/projects/python
 ```
 
 4. Open folder above in vs code and open a terminal inside vs code. On the left hand side look for "source control" and pull this project and switch to that project folder.
 
 5. Create your venv using the venv library native to python. run the following command in the vs code terminal:
 
- ```
+Windows:
+ ```Windows
  python -m venv venv
+ ```
+ Linux (May neet to install with apt install python3.11-venv)
+ ```Linux
+ python3 -m venv venv
  ```
 >ps. the second venv above is the name of the virtual environment. it can be anything you like, but make sure you remember it
 
 6. Activate virtual environment by running Activate.ps1 in the venv/Scripts/ folder. Ex:
 
-```
+Windows:
+```Windows
 & venv/Scripts/Activate.ps1
+```
+Linux:
+```Linux
+source venv/bin/activate
 ```
 
 7. Install all required libraries listed in the requirements.txt
