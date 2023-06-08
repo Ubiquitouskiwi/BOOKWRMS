@@ -54,7 +54,7 @@ source venv/bin/activate
 7. Install all required libraries listed in the requirements.txt
 
 ```
-pip install {python-library}
+pip install -r requirements.txt
 ```
 
 8. Initialize and create and fill the local DB using command:
