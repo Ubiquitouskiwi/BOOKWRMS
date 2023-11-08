@@ -22,13 +22,6 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    #app.config['SERVER_NAME'] = '127.0.0.1'
-
-    # Application pages
-    @app.route('/hello')
-    def home():
-        return 'Hello, world!'
     
     from .data_store import db
     db.init_app(app)
