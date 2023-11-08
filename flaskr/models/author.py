@@ -69,8 +69,8 @@ class Author(BaseObject):
             raise TypeError(f"Author OLID can not be {type(self.olid)}, must be str")
         
     def __del__(self):
-        if self.db:
-            self.db.close()
+        if self._db:
+            self._db.close()
     
     def __str__(self):
         return f"First: {self.first_name}, Last: {self.last_name}, OLID: {self.olid}"

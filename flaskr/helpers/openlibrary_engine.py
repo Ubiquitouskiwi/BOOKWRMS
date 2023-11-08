@@ -21,8 +21,7 @@ class OpenLibraryClient():
     
     def get_author(self, olid):
         author = self.client.Author.get(olid=olid)        
-        return author
-    
+        return author    
     
     def get_author_from_work(self, work):
         author = work.authors[0]
