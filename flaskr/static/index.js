@@ -7,20 +7,20 @@ function openCam() {
     allMediaDevices.getUserMedia({
         video: true
     })
-    .then(function(vidStream) {
-        var video = document.getElementById('videoCam');
-        if ("srcObject" in video) {
-            video.srcObject = vidStream;
-        } else {
-            video.src = window.URL.createObjectURL(vidStream);
-        }
-        video.onloadedmetadata = function(e) {
-            video.play();
-        };
-    })
-    .catch(function(e) {
-        console.log(e.name + ": " + e.message);
-    });
+        .then(function (vidStream) {
+            var video = document.getElementById('videoCam');
+            if ("srcObject" in video) {
+                video.srcObject = vidStream;
+            } else {
+                video.src = window.URL.createObjectURL(vidStream);
+            }
+            video.onloadedmetadata = function (e) {
+                video.play();
+            };
+        })
+        .catch(function (e) {
+            console.log(e.name + ": " + e.message);
+        });
 }
 
 function dercodeOnce(codeReader, selectedDeviceId) {
@@ -60,7 +60,7 @@ function decodeContinuously(codeReader, selectedDeviceId) {
     })
 }
 
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
     let selectedDeviceId;
     const codeReader = new ZXing.BrowserMultiFormatReader();
     console.log('ZXing code reader initialized');
@@ -71,7 +71,7 @@ window.addEventListener('load', function() {
             selectedDeviceId = videoInputDevices[0].deviceId;
             if (videoInputDevices.length >= 1) {
                 videoInputDevices.forEach((element) => {
-                    const sourceOption = document.createElement('option');                        
+                    const sourceOption = document.createElement('option');
                     sourceOption.text = element.label;
                     sourceOption.value = element.deviceId;
                     sourceSelect.appendChild(sourceOption);
@@ -106,4 +106,9 @@ window.addEventListener('load', function() {
         .catch((err) => {
             console.err(err);
         })
+})
+
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl)
 })

@@ -1,28 +1,75 @@
 {% extends 'base.html' %}
 
-{% block header %}
-<h1>{% block title %}Register{% endblock %}</h1>
-{% endblock %}
+
+{% block title %}Register{% endblock %}
+
 
 {% block content %}
+<!-- Section: Design Block -->
+<section class="">
+    <!-- Jumbotron -->
+    <div class="px-4 py-5 px-md-5 text-center text-lg-start">
+        <div class="container">
+            <div class="row gx-lg-5 align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0">
+                    <div class="card">
+                        <div class="card-body py-5 px-md-5">
+                            <form>
+                                <!-- Email Input -->
+                                <div class="form-outline mb-4">
+                                    <label class="form-label" for="email">Email address</label>
+                                    <input type="email" id="email" class="form-control" />
+                                </div>
 
-<div class="mb-3">
-    <form method="post">
-        <label class="form-label" for="first_name">First Name</label>
-        <input class="form-control" name="first_name" id="first_name" required>
-        <label class="form-label" for="last_name">Last Name</label>
-        <input class="form-control" name="last_name" id="last_name" required>
-        <label class="form-label" for="library_card_number">Library Card Number</label>
-        <input class="form-control" name="library_card_number" id="library_card_number" required>
-        <div class="form-check">          
-            <input class="form-check-input" type="checkbox" name="is_admin" id="is_admin">
-            <label class="form-check-label" for="is_admin">Admin</label>
-        </div> 
-        <br>    
-        <a href="{{ url_for('auth.login') }}">Log In</a>   
-        <hr>
-        <input class="btn btn-success" type="submit" value="Register">
-        <input class="btn btn-danger" type="button" onclick="window.location.href = '/'; return false;" value="Cancel">
-    </form>
-</div>
+                                <!-- First and Last Name -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="form-outline">
+                                            <label class="form-label" for="first_name">First name</label>
+                                            <input type="text" id="first_name" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <div class="form-outline">
+                                            <label class="form-label" for="last_name">Last name</label>
+                                            <input type="text" id="last_name" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Password and Confirm Password -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <div class="form-outline">
+                                            <label class="form-label" for="email">Password</label>
+                                            <input type="password" id="email" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <div class="form-outline">
+                                            <label class="form-label" for="confirm_password">Confirm Password</label>
+                                            <input type="password" id="confirm_password" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <button type="submit" class="btn btn-primary btn-block mb-4">
+                                    Register
+                                </button>
+
+                                <!-- Login -->
+                                <div class="text-center">
+                                    <p>Already a member? <a href="{{ url_for('auth.login') }}">Login</a> </p>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Jumbotron -->
+</section>
+
 {% endblock %}
