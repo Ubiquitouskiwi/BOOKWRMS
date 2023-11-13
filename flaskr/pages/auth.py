@@ -1,5 +1,5 @@
 import functools
-
+import bcrypt
 from flask import (
     Blueprint,
     flash,
@@ -11,7 +11,6 @@ from flask import (
     url_for,
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-
 from flaskr.data_store.db import get_db
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -31,28 +30,45 @@ def load_logged_in_user():
 
 @bp.route("/register", methods=["GET", "POST"])
 def register():
+    error = None
     if request.method == "POST":
+        print("FORM: ", request.form)
+        print("ARGS: ", request.args)
+        print("DATA: ", request.data)
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
-        card_number = request.form["library_card_number"]
-        admin = request.form["is_admin"]
+        email = request.form["email"]
+        password = request.form["password"]
+        password_confirm = request.form["confirm_password"]
+        # admin = request.form["is_admin"]
         db = get_db()
-        error = None
 
         if not first_name:
-            error = "Username is required."
+            error = "First name is required."
         elif not last_name:
-            error = "Password is required."
-        elif not card_number:
-            error = "All users require library card."
+            error = "Last name is required."
+        elif not email:
+            error = "All users must have an email"
+        elif not password or not password_confirm:
+            error = "Password can't be blank"
+        elif password != password_confirm:
+            error = "Passwords must match."
 
         if error is None:
+            hashed_pass = hash_password(password)
             try:
                 db.execute(
-                    "INSERT INTO user (first_name, last_name, library_card_number, is_admin) values (?, ?, ?, ?)",
-                    (first_name.lower(), last_name.lower(), card_number, admin),
+                    "INSERT INTO login (email, password) VALUES (?, ?)",
+                    (email, hashed_pass),
                 )
                 db.commit()
+                print("FIRST STATEMENT RAN")
+                db.execute(
+                    "INSERT INTO user (first_name, last_name, email, is_admin) values (?, ?, ?, ?)",
+                    (first_name.lower(), last_name.lower(), email, True),
+                )
+                db.commit()
+                print("SECOND STATEMENT RAN")
             except db.IntegrityError:
                 error = f"{first_name} {last_name} is already registered"
             else:
@@ -64,32 +80,31 @@ def register():
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        first_name = request.form["first_name"].lower()
-        last_name = request.form["last_name"].lower()
-        card_number = None  # request.form['library_card_number']
+        email = request.form["email"]
+        plain_text_password = request.form["password"]
         db = get_db()
         error = None
-        sql = None
-        params = None
 
-        if not first_name and not last_name and not card_number:
-            error = "Must provide info to login."
-        elif not first_name and not last_name and card_number:
-            sql = "SELECT * FROM user WHERE library_card_number = ?"
-            params = card_number
-        elif not card_number and first_name and last_name:
-            sql = "SELECT * FROM user WHERE first_name = ? AND last_name = ?"
-            params = (first_name, last_name)
-        if sql is not None and params is not None:
-            user = db.execute(sql, params).fetchone()
-
-        if user is None:
-            error = "No user found with that info."
+        if not email:
+            error = "Must provide email"
+        if not plain_text_password:
+            error = "Must provide password"
 
         if error is None:
-            session.clear()
-            session["user_id"] = user["id"]
-            return redirect(url_for("index"))
+            login_account_pass = db.execute(
+                "SELECT password FROM login WHERE email = ?", (email,)
+            ).fetchone()
+            print(login_account_pass)
+
+            if check_password(plain_text_password, login_account_pass["password"]):
+                user_account_id = db.execute(
+                    "SELECT id FROM user WHERE email = ?", (email,)
+                ).fetchone()
+                session.clear()
+                session["user_id"] = user_account_id["id"]
+                return redirect(url_for("index"))
+            else:
+                error = "Incorrect login credentials"
         flash(error)
     return render_template("auth/login.html")
 
@@ -98,6 +113,16 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("index"))
+
+
+def hash_password(plain_text_password):
+    # Salt is saved into hash
+    return bcrypt.hashpw(plain_text_password.encode("utf8"), bcrypt.gensalt())
+
+
+def check_password(plain_text_password, hashed_pass):
+    # Salt value was saved into hash itself
+    return bcrypt.checkpw(plain_text_password.encode("utf8"), hashed_pass)
 
 
 def login_required(view):

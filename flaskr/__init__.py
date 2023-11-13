@@ -36,6 +36,10 @@ def create_app(test_config=None):
     app.register_blueprint(home.bp)
     app.add_url_rule("/", endpoint="index")
 
+    from .pages import about
+
+    app.register_blueprint(about.bp)
+
     # from .pages import scanner
     # app.register_blueprint(scanner.bp)
 

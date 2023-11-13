@@ -1,16 +1,23 @@
 /* OLD DB CREANUP */
-
 DROP TABLE IF EXISTS author;
+
 DROP TABLE IF EXISTS book;
+
 DROP TABLE IF EXISTS user;
+
 DROP TABLE IF EXISTS checkout_log;
+
 DROP TABLE IF EXISTS login;
+
 DROP TABLE IF EXISTS library;
+
 DROP TABLE IF EXISTS library_book;
+
+DROP TABLE IF EXISTS patron;
+
 DROP TRIGGER IF EXISTS user_username_default_value;
 
 /* TABLE CREATION */
-
 CREATE TABLE author (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT NOT NULL,
@@ -36,29 +43,28 @@ CREATE TABLE book (
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
-    library_card_number INTEGER NOT NULL,
+    email TEXT NOT NULL,
     is_admin BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE (username) 
+    UNIQUE (email)
 );
 
 CREATE TABLE login (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL,
+    email TEXT NOT NULL,
     password TEXT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE(username)
+    UNIQUE(email)
 );
 
 CREATE TABLE checkout_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     book_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    patron_id INTEGER NOT NULL,
     checkout_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     checkout_duration INTEGER NOT NULL,
     checkin_date TIMESTAMP,
@@ -66,7 +72,7 @@ CREATE TABLE checkout_log (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (book_id) REFERENCES book (id),
-    FOREIGN KEY (user_id) REFERENCES user (id)
+    FOREIGN KEY (patron_id) REFERENCES patron (id)
 );
 
 CREATE TABLE library (
@@ -86,13 +92,25 @@ CREATE TABLE library_book (
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-/* TRIGER CREATION */
+CREATE TABLE patron (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name TEXT NOT NULL,
+    last_Name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    library_card_number INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
 
-CREATE TRIGGER user_username_default_value
-AFTER INSERT ON user
-FOR EACH ROW
-WHEN NEW.username IS NULL
-BEGIN
-    UPDATE user
-    SET username = NEW.first_name || NEW.last_name;
-END;
+/* TRIGER CREATION 
+ CREATE TRIGGER user_username_default_value
+ AFTER
+ INSERT
+ ON user FOR EACH ROW
+ WHEN NEW.username IS NULL BEGIN
+ UPDATE
+ user
+ SET
+ username = NEW.first_name || NEW.last_name;
+ 
+ END;*/
