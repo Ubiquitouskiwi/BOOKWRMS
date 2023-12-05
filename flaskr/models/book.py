@@ -108,18 +108,13 @@ class Book(BaseObject):
         checkout_log = []
         query = """
             SELECT
-                u.first_name,
-                u.last_name,
+                cl.patron_name,
                 cl.checkout_date,
                 cl.checkin_date,
                 cl.checkout_duration,
                 cl.renew_count
             FROM
                 checkout_log cl
-            LEFT JOIN
-                patron u
-            ON
-                cl.patron_id = u.id 
             WHERE
                 cl.deleted = false
                 AND cl.book_id = ?

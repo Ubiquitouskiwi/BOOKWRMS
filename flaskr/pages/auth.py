@@ -94,15 +94,16 @@ def login():
             login_account_pass = db.execute(
                 "SELECT password FROM login WHERE email = ?", (email,)
             ).fetchone()
-            print(login_account_pass)
-
-            if check_password(plain_text_password, login_account_pass["password"]):
-                user_account_id = db.execute(
-                    "SELECT id FROM user WHERE email = ?", (email,)
-                ).fetchone()
-                session.clear()
-                session["user_id"] = user_account_id["id"]
-                return redirect(url_for("index"))
+            if login_account_pass:
+                if check_password(plain_text_password, login_account_pass["password"]):
+                    user_account_id = db.execute(
+                        "SELECT id FROM user WHERE email = ?", (email,)
+                    ).fetchone()
+                    session.clear()
+                    session["user_id"] = user_account_id["id"]
+                    return redirect(url_for("index"))
+                else:
+                    error = "Incorrect login credentials"
             else:
                 error = "Incorrect login credentials"
         flash(error)
