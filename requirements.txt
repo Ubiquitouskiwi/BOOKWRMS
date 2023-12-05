@@ -37,3 +37,4 @@ urllib3==2.0.7
 userpath==1.9.1
 Werkzeug==3.0.1
 zipp==3.17.0
+openlibrary-client @ git+https://github.com/internetarchive/openlibrary-client.git@main
