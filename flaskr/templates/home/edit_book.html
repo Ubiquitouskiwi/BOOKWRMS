@@ -1,27 +1,31 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Editing: "{{ book['title'] }}"{% endblock %}</h1>
+<h1>{% block title %}Editing: "{{ book['title'] }}"{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<div class="mb-3">   
+<div class="mb-3">
     <form method="post">
         <label class="form-label" for="title">Title</label>
-        <input class="form-control" name="title" id="title" value="{{ request.form['title'] or book['title'] }}" required>
+        <input class="form-control" name="title" id="title" value="{{ request.form['title'] or book['title'] }}"
+            required>
         <label class="form-label" for="isbn">ISBN</label>
         <input class="form-control" name="isbn" id="isbn" value="{{ request.form['isbn'] or book['isbn'] }}" required>
         <label class="form-label" for="illustration_url">Book Cover URL</label>
-        <input class="form-control" name="illustration_url" id="illustration_url" value="{{ request.form['illustration_url'] or book['illustration_url'] }}" required>   
+        <input class="form-control" name="illustration_url" id="illustration_url"
+            value="{{ request.form['illustration_url'] or book['illustration_url'] }}" required>
         <br>
-        <input class="btn btn-success" type="submit" value="Save"> 
-        <input class="btn btn-outline-danger" type="button" onClick="window.history.go(-1); return false;" value="Cancel">
+        <input class="btn btn-success" type="submit" value="Save">
+        <input class="btn btn-outline-danger" type="button" onClick="window.history.go(-1); return false;"
+            value="Cancel">
     </form>
     <br>
     <p class="text-danger">THESE ACTIONS ARE NOT RECOVERABLE!</p>
     <hr>
-    <form action="{{ url_for('home.delete_book', id=book['id']) }}" method="post">       
-        <input class="btn btn-danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');" name="deleteButton" id="deleteButton">
+    <form action="{{ url_for('home.delete_book', id=book['id']) }}" method="post">
+        <input class="btn btn-danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');"
+            name="deleteButton" id="deleteButton">
     </form>
 </div>
 {% endblock %}
