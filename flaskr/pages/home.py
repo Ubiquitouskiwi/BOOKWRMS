@@ -150,5 +150,15 @@ def book_details(id):
     with current_app.app_context():
         book = Book()
         book.inflate_by_id(id)
+        client = OpenLibraryClient()
+
+        book_resp = client.search_isbn(book.isbn)
+        author_resp = client.get_author_from_work(book_resp)
+
+        try:
+            book.author_links = author_resp.links
+        except AttributeError:
+            current_app.logger.info(f"Links not found for {book.author_id}")
+        book.summary = book_resp.description
 
         return render_template("home/book_details.html", book=book)

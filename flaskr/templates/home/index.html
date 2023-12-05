@@ -4,7 +4,7 @@
 <div class="jumbotron text-center">
     {% if g.user %}
     <h1 class="display-4">{{ g.user['first_name'].capitalize() }}'s Library</h1>
-    <a class="lead" href="#}">Checkout</a>
+    <!--<a class="lead" href="#}">Checkout</a>-->
     {% else %}
     <h1 class="display-4">{% block title %}Book Repository{% endblock %}</h1>
     {% endif %}
@@ -16,7 +16,8 @@
     {% for book in books %}
     <div class="col-md-3" style="margin-bottom:20px;">
         <div class="card">
-            <img class="card-img-top img-thumbnail" src="{{ book['illustration_url'] }}" alt="Book Cover">
+            <img class="card-img-top img-thumbnail" style="max-height: 400px;" src="{{ book['illustration_url'] }}"
+                alt="Book Cover">
             <div class="card-body">
                 <h5 class="card-title"><u>{{ book['title'] }}</u></h5>
                 <p class="card-subtitle mb-1 text-muted">By: {{ book['first_name'] }} {{ book['last_name']}}</h6>
@@ -24,9 +25,11 @@
                 <a class="card-link" href="{{ url_for('home.book_details', id=book['id']) }}">More Info</a>
                 {% if g.user['is_admin'] %}
                 <a class="card-link" href="{{ url_for('home.edit_book', id=book['id']) }}">Edit Book</a>
+                <hr />
+                <a class="card-link" href="{{ url_for('home.edit_book', id=book['id']) }}">Check Out</a>
                 {% endif %}
             </div>
-            <div class="card-footer text-muted text-center">
+            <div class="card-footer text-muted text-center" style="color:green;">
                 Available
             </div>
         </div>

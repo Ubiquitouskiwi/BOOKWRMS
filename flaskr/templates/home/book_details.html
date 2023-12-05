@@ -17,19 +17,21 @@
     {% endif %}
 </div>
 <div>
+    {% if book['author_links'] %}
     <p>Author Links:</p>
     <ul>
-        {% if book['author_links'] %}
+
         {% for link in book['author_links'] %}
         <li><a href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
         {% endfor %}
-        {% endif %}
+
     </ul>
+    {% endif %}
 </div>
 <hr>
 <div>
     <h4>Summary</h4>
-    <p class="summary">{{ book['summary'] }}</p>
+    <p class="summary"><md-block>{{ book['summary'] }}</md-block></p>
     <br>
 </div>
 <div>
@@ -45,22 +47,22 @@
             <th scope="col">Times Renewed</th>
         </tr>
         {% if book.checkout_log %}
-            {% for checkout in book.checkout_log %}
-            <tr>
-                <td>{{ checkout['first_name'] + " " + checkout['last_name'] }}</td>
-                {% if checkout['returned'] %}
-                    <td><i class="bi-x-lg"></td>
-                {% else %}
-                    <td><i class="bi-check-lg"></i></td>
-                {% endif %}
-                <td>{{ checkout['checkout_date'] }}</td>
-                <td>{{ checkout['checkin_date'] }}</td>
-                <td>{{ checkout['expected_return'] }} </td>
-                <td>{{ checkout['renew_count'] }}</td>
-            </tr>
-            {% endfor %}
+        {% for checkout in book.checkout_log %}
+        <tr>
+            <td>{{ checkout['first_name'] + " " + checkout['last_name'] }}</td>
+            {% if checkout['returned'] %}
+            <td><i class="bi-x-lg"></td>
+            {% else %}
+            <td><i class="bi-check-lg"></i></td>
+            {% endif %}
+            <td>{{ checkout['checkout_date'] }}</td>
+            <td>{{ checkout['checkin_date'] }}</td>
+            <td>{{ checkout['expected_return'] }} </td>
+            <td>{{ checkout['renew_count'] }}</td>
+        </tr>
+        {% endfor %}
         {% else %}
-            <p>No checkout history.</p>
+        <p>No checkout history.</p>
         {% endif %}
     </table>
 </div>
