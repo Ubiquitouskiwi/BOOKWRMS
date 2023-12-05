@@ -49,12 +49,11 @@ def index():
 @login_required
 def add_book():
     if request.method == "POST":
-        title = request.form["title"]
         isbn = request.form["isbn"]
         error = None
         current_app.logger.info("Post Received")
 
-        if not title and not isbn:
+        if not isbn:
             error = "ISBN or title must not be blank."
             current_app.logger.info("Title and isbn blank")
 
