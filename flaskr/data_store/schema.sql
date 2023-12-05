@@ -64,15 +64,14 @@ CREATE TABLE login (
 CREATE TABLE checkout_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     book_id INTEGER NOT NULL,
-    patron_id INTEGER NOT NULL,
+    patron_name TEXT NOT NULL,
     checkout_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     checkout_duration INTEGER NOT NULL,
     checkin_date TIMESTAMP,
     renew_count INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (book_id) REFERENCES book (id),
-    FOREIGN KEY (patron_id) REFERENCES patron (id)
+    FOREIGN KEY (book_id) REFERENCES book (id)
 );
 
 CREATE TABLE library (

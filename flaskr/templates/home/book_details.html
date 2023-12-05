@@ -14,6 +14,7 @@
     <div class="about">ISBN: {{ book.isbn }}</div>
     {% if g.user %}
     <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a>
+    <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a>
     {% endif %}
 </div>
 <div>

@@ -13,6 +13,7 @@ from werkzeug.exceptions import abort
 from flaskr.pages.auth import login_required
 from flaskr.models.book import Book
 from flaskr.models.author import Author
+from flaskr.models.checkout import Checkout
 from flaskr.data_store.db import get_db
 from ..helpers.openlibrary_engine import OpenLibraryClient
 
@@ -67,9 +68,7 @@ def add_book():
                 current_app.logger.info("ISBN is not blank")
                 book_resp = ol_client.search_isbn(isbn)
                 author_resp = ol_client.get_author_from_work(book_resp)
-                cover = (
-                    f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}-M.jpg"
-                )
+                cover = f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}.jpg"
                 author_name_split = author_resp.name.split(" ")
                 first_name = author_name_split[0]
                 last_name = author_name_split[-1]
@@ -143,6 +142,17 @@ def delete_book(id):
         db.execute("UPDATE books SET deleted = TRUE WHERE id = ?", [id])
         db.commit()
         return redirect(url_for("home.index"))
+
+
+@bp.route("/<int:id>/checkout_book", methods=["GET", "POST"])
+@login_required
+def checkout_book(id):
+    book = Book()
+    book.inflate_by_id(id)
+
+    if book.id is not None:
+        checkout = Checkout()
+    return redirect(url_for("home.index"))
 
 
 @bp.route("/<int:id>/book_details", methods=["GET"])
