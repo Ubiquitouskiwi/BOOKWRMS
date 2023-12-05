@@ -1,28 +1,24 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Add Book{% endblock %}</h1>
+<h1>{% block title %}Add Book{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-  <form method="post">
-    <div class="form-floating mb-3">   
-      <label  for="title">Title</label>   
-      <input placeholder="eg. Of Mice and Men" class="form-control" name="title" id="title" required>      
-    </div>
-    <div class="form-floating mb-3">
-      <label  for="isbn">ISBN</label>
-      <input placeholder="eg. 978-0140177398" class="form-control" name="isbn" id="isbn">
-    </div>
-    <div class="form-floating mb-3">
-      <label  for="illustration_url">Book Cover Url</label>
-      <input placeholder="eg. https://covers.openlibrary.org/b/id/12902964-L.jpg" class="form-control" name="illustration_url" id="illusration_url" required>
-    </div>
-    <div class="form-floating mb-3">
-      <input class="btn btn-success" type="submit" value="Save">
-      <input type="button" class="btn btn-danger" onclick="window.history.go(-1); return false;" value="Cancel">
-      <input type="reset" class="btn btn-warning" href="/" value="Clear">
-    </div>     
-  </form>
+<form method="post">
+  <div class="form-floating mb-3">
+    <label for="title">Title</label>
+    <input placeholder="eg. Of Mice and Men" class="form-control" name="title" id="title" required>
+  </div>
+  <div class="form-floating mb-3">
+    <label for="isbn">ISBN</label>
+    <input placeholder="eg. 978-0140177398" class="form-control" name="isbn" id="isbn">
+  </div>
+  <div class="form-floating mb-3">
+    <input class="btn btn-success" type="submit" value="Search">
+    <input type="button" class="btn btn-danger" onclick="window.history.go(-1); return false;" value="Cancel">
+    <input type="reset" class="btn btn-warning" href="/" value="Clear">
+  </div>
+</form>
 
 {% endblock %}

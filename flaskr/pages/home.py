@@ -12,6 +12,7 @@ from werkzeug.exceptions import abort
 
 from flaskr.pages.auth import login_required
 from flaskr.models.book import Book
+from flaskr.models.author import Author
 from flaskr.data_store.db import get_db
 from ..helpers.openlibrary_engine import OpenLibraryClient
 
@@ -50,27 +51,52 @@ def add_book():
     if request.method == "POST":
         title = request.form["title"]
         isbn = request.form["isbn"]
-        illustration_url = request.form["illustration_url"]
-        author_id = 1
         error = None
+        current_app.logger.info("Post Received")
 
-        if not title:
-            error = "Title is a required field."
-        elif not isbn:
-            error = "ISBN is a required field."
-        elif not illustration_url:
-            error = "Illustration_url is a required field."
+        if not title and not isbn:
+            error = "ISBN or title must not be blank."
+            current_app.logger.info("Title and isbn blank")
 
         if error is not None:
+            current_app.logger.info("Error found")
             flash(error)
         else:
-            db = get_db()
-            db.execute(
-                "INSERT INTO book (title, author_id, isbn, illustration_url) VALUES (?, ?, ?, ?)",
-                (title, author_id, isbn, illustration_url),
-            )
-            db.commit()
-            return redirect(url_for("home.index"))
+            ol_client = OpenLibraryClient()
+            current_app.logger.info("No errors found")
+            if isbn:
+                current_app.logger.info("ISBN is not blank")
+                book_resp = ol_client.search_isbn(isbn)
+                author_resp = ol_client.get_author_from_work(book_resp)
+                cover = (
+                    f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}-M.jpg"
+                )
+                author_name_split = author_resp.name.split(" ")
+                first_name = author_name_split[0]
+                last_name = author_name_split[-1]
+                middle_name = None
+                if len(author_name_split) == 3:
+                    middle_name = author_name_split[1]
+                author = Author(
+                    first_name=first_name,
+                    middle_name=middle_name,
+                    last_name=last_name,
+                    olid=author_resp.olid,
+                )
+                author.save()
+                author = Author()
+                author.inflate_by_name(
+                    author_resp.name.split(" ")[0], author_resp.name.split(" ")[-1]
+                )
+                book = Book(
+                    title=book_resp.title,
+                    isbn=isbn,
+                    cover_url=cover,
+                    author_id=author.id,
+                )
+                book.save()
+
+        return redirect(url_for("home.index"))
 
     return render_template("home/add_book.html")
 

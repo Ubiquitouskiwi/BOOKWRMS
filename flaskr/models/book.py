@@ -11,7 +11,7 @@ class Book(BaseObject):
         book_id=None,
         title=None,
         isbn=None,
-        author=None,
+        author_id=None,
         cover_url=None,
         checkout_log=None,
     ):
@@ -19,7 +19,7 @@ class Book(BaseObject):
         self.title = title
         self.isbn = isbn
         self.cover_url = cover_url
-        self.author = author
+        self.author_id = author_id
         self.checkout_log = checkout_log
 
         # Private fields
@@ -46,15 +46,13 @@ class Book(BaseObject):
         """
 
     def save(self):
-        self._error_check()
-        if not self.db:
-            self.db = get_db()
+        self._check_db()
         query = """
                 INSERT INTO
                     book (title, author_id, isbn, illustration_url)
                 VALUES
                     (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE 
+                ON CONFLICT(isbn) DO UPDATE SET 
                     title = ?, author_id = ?, isbn = ?, illustration_url = ?
                 """
         query_params = [
@@ -67,8 +65,8 @@ class Book(BaseObject):
             self.isbn,
             self.cover_url,
         ]
-        self.db.execute(query, query_params)
-        self.db.commit()
+        self._db.execute(query, query_params)
+        self._db.commit()
 
     def inflate_by_id(self, id):
         where_clause = "book.id = ?"
