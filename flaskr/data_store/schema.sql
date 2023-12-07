@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS patron;
 DROP TRIGGER IF EXISTS user_username_default_value;
 
 /* TABLE CREATION */
+/* table that has author information. OLID is ID for open library */
 CREATE TABLE author (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT NOT NULL,
@@ -28,6 +29,7 @@ CREATE TABLE author (
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+/* table that holds book info. OLID is ID for open library */
 CREATE TABLE book (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL,
@@ -41,6 +43,7 @@ CREATE TABLE book (
     UNIQUE(isbn)
 );
 
+/* table that has user info. All users are admins who can add/edit/checkout books */
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT NOT NULL,
@@ -52,6 +55,7 @@ CREATE TABLE user (
     UNIQUE (email)
 );
 
+/* table that holds login info. used for login */
 CREATE TABLE login (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     email TEXT NOT NULL,
@@ -74,6 +78,7 @@ CREATE TABLE checkout_log (
     FOREIGN KEY (book_id) REFERENCES book (id)
 );
 
+/* NOT USED: table that adds ability for more that one person to have a library */
 CREATE TABLE library (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -83,6 +88,7 @@ CREATE TABLE library (
     FOREIGN KEY (user_id) REFERENCES user (id)
 );
 
+/* NOT USED: table that marries books to the library */
 CREATE TABLE library_book (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     library_id INTEGER NOT NULL,
@@ -91,6 +97,7 @@ CREATE TABLE library_book (
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+/* NOT USED: table that holds patron data (people who use library) */
 CREATE TABLE patron (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     first_name TEXT NOT NULL,
