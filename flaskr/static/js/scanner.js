@@ -65,7 +65,7 @@ Quagga.init({
         target: document.querySelector("#barcode-scanner")
     },
     decoder: {
-        readers: ["code_128_reader", "ean_reader"]
+        readers: ["ean_reader"]
     },
     multiple: false,
     halfSample: false,
