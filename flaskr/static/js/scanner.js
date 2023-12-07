@@ -2,6 +2,7 @@
 var video = document.querySelector("#barcode-scanner");
 var cameraOptions = document.querySelector("#camera-options");
 var playButton = document.querySelector("#play-button");
+var barcodeResult = document.querySelector("#result");
 let streamStarted = false;
 
 const constraints = {
@@ -15,7 +16,8 @@ const constraints = {
             min: 480,
             ideal: 1080,
             max: 1440
-        }
+        },
+        faceingMode: 'environment'
     }
 }
 
@@ -27,6 +29,8 @@ const getCameraSelection = async () => {
     });
     cameraOptions.innerHTML = options.join('');
 }
+
+getCameraSelection();
 
 playButton.onclick = () => {
     if (streamStarted) {
@@ -51,42 +55,30 @@ const startStream = async (constraints) => {
 
 const handleStream = (stream) => {
     video.srcObject = stream;
-    streamStarted = ture;
+    streamStarted = true;
 }
 
-getCameraSelection();
+Quagga.init({
+    inputStream: {
+        name: "Live",
+        type: "LiveStream",
+        target: document.querySelector("#barcode-scanner")
+    },
+    decoder: {
+        readers: ["code_128_reader", "ean_reader"]
+    },
+    multiple: false,
+    halfSample: false,
+}, function (err) {
+    if (err) {
+        console.log(err);
+        return
+    }
+    console.log("Initialization finished. Ready to start.");
+    Quagga.start();
+    Quagga.onDetected(function (data) {
+        console.log(data);
+        barcodeResult.innerHTML = data.codeResult.code;
 
-
-// getCameraSelection();
-
-// if (navigator.mediaDevices.getUserMedia) {
-//     navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
-//         video.srcObject = stream;
-//     }).catch(function (err) {
-//         console.log(err);
-//     });
-// }
-
-
-// Quagga.init({
-//     inputStream: {
-//         name: "Live",
-//         type: "LiveStream",
-//         target: document.querySelector("#barcode-scanner")
-//     },
-//     decoder: {
-//         readers: ["code_128_reader", "ean_reader"]
-//     },
-//     multiple: false,
-//     halfSample: false,
-// }, function (err) {
-//     if (err) {
-//         console.log(err);
-//         return
-//     }
-//     console.log("Initialization finished. Ready to start.");
-//     Quagga.start();
-//     Quagga.onDetected(function (data) {
-//         console.log(data);
-//     })
-// })
+    })
+})
