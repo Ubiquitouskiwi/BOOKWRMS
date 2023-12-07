@@ -14,11 +14,17 @@
         <label for="checkin-date">Checkin</label>
         <input type="date" name="checkin-date" id="checkin-date" class="form-control" />
     </div>
-    <div>
-        <video autoplay="true" id="barcode-scanner">
-
-        </video>
-    </div>
 </form>
+<div>
+    <button id="play-button" class="btn btn-success play" title="Play">Play</button>
+    <div>
+        <select name="" id="camera-options">
+            <option value="video-options">Select camera</option>
+        </select>
+    </div>
+    <video autoplay="true" id="barcode-scanner">
+
+    </video>
+</div>
 <script src="../../static/js/scanner.js"></script>
 {% endblock %}
