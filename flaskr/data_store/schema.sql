@@ -107,16 +107,3 @@ CREATE TABLE patron (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
-
-/* TRIGER CREATION 
- CREATE TRIGGER user_username_default_value
- AFTER
- INSERT
- ON user FOR EACH ROW
- WHEN NEW.username IS NULL BEGIN
- UPDATE
- user
- SET
- username = NEW.first_name || NEW.last_name;
- 
- END;*/

@@ -140,7 +140,7 @@ def delete_book(id):
 
     if book.id is not None:
         db = get_db()
-        db.execute("UPDATE books SET deleted = TRUE WHERE id = ?", [id])
+        db.execute("UPDATE book SET deleted = TRUE WHERE id = ?", [id])
         db.commit()
         return redirect(url_for("home.index"))
 
