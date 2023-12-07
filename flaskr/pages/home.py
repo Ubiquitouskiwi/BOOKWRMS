@@ -7,6 +7,7 @@ from flask import (
     request,
     url_for,
     current_app,
+    session,
 )
 from werkzeug.exceptions import abort
 
@@ -18,6 +19,18 @@ from flaskr.data_store.db import get_db
 from ..helpers.openlibrary_engine import OpenLibraryClient
 
 bp = Blueprint("home", __name__)
+
+
+@bp.before_app_request
+def load_logged_in_user():
+    user_id = session["user_id"]
+
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = (
+            get_db().execute("SELECT * FROM user WHERE id = ?", [user_id]).fetchone()
+        )
 
 
 @bp.route("/")
@@ -147,28 +160,29 @@ def delete_book(id):
 @bp.route("/<int:id>/checkout_book", methods=["GET", "POST"])
 @login_required
 def checkout_book(id):
-    book = Book()
-    book.inflate_by_id(id)
+    if request.method == "POST":
+        book = Book()
+        book.inflate_by_id(id)
 
-    if book.id is not None:
-        checkout = Checkout()
-    return redirect(url_for("home.index"))
+        if book.id is not None:
+            checkout = Checkout()
+        return redirect(url_for("home.index"))
+    return render_template("home/checkout_book.html")
 
 
 @bp.route("/<int:id>/book_details", methods=["GET"])
 def book_details(id):
-    with current_app.app_context():
-        book = Book()
-        book.inflate_by_id(id)
-        client = OpenLibraryClient()
+    book = Book()
+    book.inflate_by_id(id)
+    client = OpenLibraryClient()
 
-        book_resp = client.search_isbn(book.isbn)
-        author_resp = client.get_author_from_work(book_resp)
+    book_resp = client.search_isbn(book.isbn)
+    author_resp = client.get_author_from_work(book_resp)
 
-        try:
-            book.author_links = author_resp.links
-        except AttributeError:
-            current_app.logger.info(f"Links not found for {book.author_id}")
-        book.summary = book_resp.description
+    try:
+        book.author_links = author_resp.links
+    except AttributeError:
+        current_app.logger.info(f"Links not found for {book.author_id}")
+    book.summary = book_resp.description
 
-        return render_template("home/book_details.html", book=book)
+    return render_template("home/book_details.html", book=book)

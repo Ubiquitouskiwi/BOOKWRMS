@@ -32,15 +32,11 @@ def load_logged_in_user():
 def register():
     error = None
     if request.method == "POST":
-        print("FORM: ", request.form)
-        print("ARGS: ", request.args)
-        print("DATA: ", request.data)
         first_name = request.form["first_name"]
         last_name = request.form["last_name"]
         email = request.form["email"]
         password = request.form["password"]
         password_confirm = request.form["confirm_password"]
-        # admin = request.form["is_admin"]
         db = get_db()
 
         if not first_name:
@@ -62,13 +58,11 @@ def register():
                     (email, hashed_pass),
                 )
                 db.commit()
-                print("FIRST STATEMENT RAN")
                 db.execute(
                     "INSERT INTO user (first_name, last_name, email, is_admin) values (?, ?, ?, ?)",
                     (first_name.lower(), last_name.lower(), email, True),
                 )
                 db.commit()
-                print("SECOND STATEMENT RAN")
             except db.IntegrityError:
                 error = f"{first_name} {last_name} is already registered"
             else:

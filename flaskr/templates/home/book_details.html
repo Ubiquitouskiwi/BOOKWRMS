@@ -12,9 +12,9 @@
     <br>
     <div class="about">By: {{ book.author.first_name }} {{ book.author.last_name}}</div>
     <div class="about">ISBN: {{ book.isbn }}</div>
-    {% if g.user %}
-    <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a>
-    <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a>
+    {% if g.user['is_admin'] %}
+    <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a> |
+    <a class="lead" href="{{ url_for('home.checkout_book', id = book.id) }}">Checkout</a>
     {% endif %}
 </div>
 <div>
