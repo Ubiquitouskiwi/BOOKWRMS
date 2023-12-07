@@ -14,7 +14,7 @@
         <input class="form-control" name="isbn" id="isbn" value="{{ request.form['isbn'] or book['isbn'] }}" required>
         <label class="form-label" for="illustration_url">Book Cover URL</label>
         <input class="form-control" name="illustration_url" id="illustration_url"
-            value="{{ request.form['illustration_url'] or book['illustration_url'] }}" required>
+            value="{{ request.form['illustration_url'] or book['cover_url'] }}" required>
         <br>
         <input class="btn btn-success" type="submit" value="Save">
         <input class="btn btn-outline-danger" type="button" onClick="window.history.go(-1); return false;"

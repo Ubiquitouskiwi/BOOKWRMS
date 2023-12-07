@@ -3,10 +3,12 @@
 <head>
     <title>{% block title %}{% endblock %} | BOOKWRMS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 
 <body>
+    <!-- Scanner JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
     <div class="container-fluid">
         <nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top" role="navigation" aria-current="page">
             <a class="navbar-brand" href="/" data-bs-toggle="tooltip" data-bs-html="true"
@@ -67,7 +69,7 @@
         crossorigin="anonymous"></script>
 
     <!--Local javascript-->
-    <script src="../static/index.js"></script>
+    <script src="../static/js/index.js"></script>
 </body>
 
 </html>
