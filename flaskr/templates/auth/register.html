@@ -14,14 +14,16 @@
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="card">
                         <div class="card-body py-5 px-md-5">
-                            {% with messages = get_flashed_messages() %}
-                            <p style="color:red;">{{ messages[0] }}</p>
-                            {% endwith %}
                             <form method="POST" id="form">
+                                <!-- Display error message -->
+                                {% with messages = get_flashed_messages() %}
+                                <p style="color:red;">{{ messages[0] }}</p>
+                                {% endwith %}
                                 <!-- Email Input -->
                                 <div class="form-outline mb-4">
                                     <label class="form-label" for="email">Email</label>
-                                    <input form="form" name="email" type="email" id="email" class="form-control">
+                                    <input form="form" name="email" type="email" id="email" class="form-control"
+                                        required>
                                 </div>
 
                                 <!-- First and Last Name -->
@@ -30,14 +32,14 @@
                                         <div class="form-outline">
                                             <label class="form-label" for="first_name">First name</label>
                                             <input type="text" name="first_name" id="first_name" form="form"
-                                                class="form-control">
+                                                class="form-control" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-4">
                                         <div class="form-outline">
                                             <label class="form-label" for="last_name">Last name</label>
                                             <input type="text" id="last_name" name="last_name" form="form"
-                                                class="form-control">
+                                                class="form-control" required>
                                         </div>
                                     </div>
                                 </div>
@@ -48,14 +50,23 @@
                                         <div class="form-outline">
                                             <label class="form-label" for="password">Password</label>
                                             <input type="password" id="password" name="password" form="form"
-                                                class="form-control">
+                                                class="form-control" required>
                                         </div>
                                     </div>
                                     <div class="col-md-6 mb-4">
                                         <div class="form-outline">
                                             <label class="form-label" for="confirm_password">Confirm Password</label>
                                             <input type="password" id="confirm_password" name="confirm_password"
-                                                form="form" class="form-control">
+                                                form="form" class="form-control" required>
+                                        </div>
+                                    </div>
+
+                                    <!-- Invite Code -->
+                                    <div class="mb-4">
+                                        <div class="form-outline">
+                                            <label class="form-label" for="invite_code">Invite Code</label>
+                                            <input type="text" id="invite_code" name="invite_code" form="form"
+                                                class="form-control" required>
                                         </div>
                                     </div>
                                 </div>

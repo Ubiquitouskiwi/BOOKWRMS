@@ -37,6 +37,7 @@ def register():
         email = request.form["email"]
         password = request.form["password"]
         password_confirm = request.form["confirm_password"]
+        invite_code = request.form["invite_code"]
         db = get_db()
 
         if not first_name:
@@ -49,24 +50,36 @@ def register():
             error = "Password can't be blank"
         elif password != password_confirm:
             error = "Passwords must match."
+        elif not invite_code:
+            error = "Must have invite code to register."
 
         if error is None:
-            hashed_pass = hash_password(password)
-            try:
-                db.execute(
-                    "INSERT INTO login (email, password) VALUES (?, ?)",
-                    (email, hashed_pass),
-                )
-                db.commit()
-                db.execute(
-                    "INSERT INTO user (first_name, last_name, email, is_admin) values (?, ?, ?, ?)",
-                    (first_name.lower(), last_name.lower(), email, True),
-                )
-                db.commit()
-            except db.IntegrityError:
-                error = f"{first_name} {last_name} is already registered"
-            else:
-                return redirect(url_for("auth.login"))
+            invite_code_id = db.execute(
+                "SELECT id FROM invite_code WHERE code = ? AND valid = ? AND deleted = ?",
+                [invite_code, True, False],
+            ).fetchone()["id"]
+            if invite_code_id is not None:
+                hashed_pass = hash_password(password)
+                try:
+                    db.execute(
+                        "INSERT INTO login (email, password) VALUES (?, ?)",
+                        (email, hashed_pass),
+                    )
+                    db.commit()
+                    db.execute(
+                        "INSERT INTO user (first_name, last_name, email, is_admin) values (?, ?, ?, ?)",
+                        (first_name.lower(), last_name.lower(), email, True),
+                    )
+                    db.commit()
+                except db.IntegrityError:
+                    error = f"{first_name} {last_name} is already registered"
+                    db.execute(
+                        "UPDATE invite_code SET valid = FALSE, user_email = ? WHERE id = ?",
+                        [email, invite_code_id],
+                    )
+                    db.commit()
+                else:
+                    return redirect(url_for("auth.login"))
         flash(error)
     return render_template("auth/register.html")
 
