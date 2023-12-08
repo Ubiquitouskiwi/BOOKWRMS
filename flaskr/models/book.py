@@ -112,7 +112,8 @@ class Book(BaseObject):
                 cl.checkout_date,
                 cl.checkin_date,
                 cl.checkout_duration,
-                cl.renew_count
+                cl.renew_count,
+                cl.returned
             FROM
                 checkout_log cl
             WHERE
@@ -124,12 +125,11 @@ class Book(BaseObject):
         for row in results:
             calc_return = timedelta(days=row["checkout_duration"])
             calc_return = row["checkout_date"] + calc_return
-            returned = row["checkin_date"] is None
             checkout_log.append(
                 {
-                    "first_name": row["first_name"],
-                    "last_name": row["last_name"],
-                    "returned": returned,
+                    "first_name": row["patron_name"].split(" ")[0],
+                    "last_name": row["patron_name"].split(" ")[-1],
+                    "returned": bool(row["returned"]),
                     "checkout_date": row["checkout_date"],
                     "checkin_date": row["checkin_date"],
                     "renew_count": row["renew_count"],

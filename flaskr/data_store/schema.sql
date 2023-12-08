@@ -73,6 +73,7 @@ CREATE TABLE checkout_log (
     checkout_duration INTEGER NOT NULL,
     checkin_date TIMESTAMP,
     renew_count INTEGER NOT NULL DEFAULT 0,
+    returned BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (book_id) REFERENCES book (id)

@@ -14,7 +14,8 @@
     <div class="about">ISBN: {{ book.isbn }}</div>
     {% if g.user['is_admin'] %}
     <a class="lead" href="{{ url_for('home.edit_book', id = book.id) }}">Edit Book</a> |
-    <a class="lead" href="{{ url_for('home.checkout_book', id = book.id) }}">Checkout</a>
+    <a class="lead" href="{{ url_for('home.checkout_book', id = book.id) }}">Checkout</a> |
+    <a class="lead" href="/{{ book.id }}/return_book">Return</a>
     {% endif %}
 </div>
 <div>
@@ -52,9 +53,9 @@
         <tr>
             <td>{{ checkout['first_name'] + " " + checkout['last_name'] }}</td>
             {% if checkout['returned'] %}
-            <td><i class="bi-x-lg"></td>
-            {% else %}
             <td><i class="bi-check-lg"></i></td>
+            {% else %}
+            <td><i class="bi-x-lg"></td>
             {% endif %}
             <td>{{ checkout['checkout_date'] }}</td>
             <td>{{ checkout['checkin_date'] }}</td>

@@ -6,15 +6,28 @@
     <h1 class="display-4">Library</h1>
     <!--<a class="lead" href="#}">Checkout</a>-->
     {% else %}
-    <h1 class="display-4">{% block title %}Library {% endblock %}</h1>
+    <h1 class="display-4">{% block title %}Library{% endblock %}</h1>
     {% endif %}
+    <form method="post" action="/search_book">
+        {% with messages = get_flashed_messages() %}
+        <p style="color:red;">{{ messages[0] }}</p>
+        {% endwith %}
+        <div class="input-group mb-3">
+            <select class="form-select" name="search_type" aria-label="Search Type">
+                <option value="isbn">ISBN</option>
+                <option value="title">Title</option>
+            </select>
+            <input type="text" name="search_criteria" class="form-control">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
 </div>
 {% endblock %}
 
 {% block content %}
 <div class="row">
     {% for book in books %}
-    <div class="col-md-3" style="margin-bottom:20px;">
+    <div class="col-md-3">
         <div class="card">
             <img class="card-img-top img-thumbnail" style="max-height: 400px;" src="{{ book['illustration_url'] }}"
                 alt="Book Cover">
@@ -27,6 +40,7 @@
                 <a class="card-link" href="{{ url_for('home.edit_book', id=book['id']) }}">Edit Book</a>
                 <hr />
                 <a class="card-link" href="{{ url_for('home.checkout_book', id=book['id']) }}">Check Out</a>
+                <a class="card-link" href="{{ url_for('home.checkout_book', id=book['id']) }}">Return</a>
                 {% endif %}
             </div>
             <div class="card-footer text-muted text-center" style="color:green;">

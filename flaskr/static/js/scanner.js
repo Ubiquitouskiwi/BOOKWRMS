@@ -1,23 +1,23 @@
 // check compatability
 var video = document.querySelector("#barcode-scanner");
 var cameraOptions = document.querySelector("#camera-options");
-var playButton = document.querySelector("#play-button");
-var barcodeResult = document.querySelector("#result");
+var playButton = document.querySelector("#scan-button");
+var barcodeResult = document.querySelector("#isbn");
 let streamStarted = false;
 
 const constraints = {
     video: {
         width: {
-            min: 480,
+            min: 1280,
             ideal: 1920,
             max: 2560
         },
         height: {
-            min: 480,
+            min: 720,
             ideal: 1080,
             max: 1440
         },
-        faceingMode: 'environment'
+        facingMode: 'environment'
     }
 }
 
@@ -25,12 +25,14 @@ const getCameraSelection = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
     const options = videoDevices.map(videoDevice => {
-        return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
+        var label = videoDevice.label;
+        if (label === "") {
+            label = `Camera ${videoDevice.kind}`;
+        }
+        return `<option value="${videoDevice.deviceId}">${label}</option>`;
     });
     cameraOptions.innerHTML = options.join('');
 }
-
-getCameraSelection();
 
 playButton.onclick = () => {
     if (streamStarted) {
@@ -65,10 +67,9 @@ Quagga.init({
         target: document.querySelector("#barcode-scanner")
     },
     decoder: {
-        readers: ["code_128_reader", "ean_reader"]
+        readers: ["ean_reader"]
     },
     multiple: false,
-    halfSample: false,
 }, function (err) {
     if (err) {
         console.log(err);
@@ -78,7 +79,10 @@ Quagga.init({
     Quagga.start();
     Quagga.onDetected(function (data) {
         console.log(data);
-        barcodeResult.innerHTML = data.codeResult.code;
-
+        barcodeResult.value = data.codeResult.code;
+        video.autoplay = false
+        streamStarted = false
     })
-})
+});
+
+getCameraSelection();

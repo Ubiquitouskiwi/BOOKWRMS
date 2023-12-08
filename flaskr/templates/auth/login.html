@@ -14,6 +14,9 @@
             <div class="card">
               <div class="card-body py-5 px-md-5">
                 <form method="POST">
+                  {% with messages = get_flashed_messages() %}
+                  <p style="color:red;">{{ messages[0] }}</p>
+                  {% endwith %}
                   <!-- Username Input -->
                   <div class="form-outline mb-4">
                     <label class="form-label" for="email">Email</label>
