@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS library_book;
 
 DROP TABLE IF EXISTS patron;
 
-DROP TRIGGER IF EXISTS user_username_default_value;
+DROP TABLE IF EXISTS invite_code;
 
 /* TABLE CREATION */
 /* table that has author information. OLID is ID for open library */
@@ -73,6 +73,7 @@ CREATE TABLE checkout_log (
     checkout_duration INTEGER NOT NULL,
     checkin_date TIMESTAMP,
     renew_count INTEGER NOT NULL DEFAULT 0,
+    returned BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (book_id) REFERENCES book (id)
@@ -104,6 +105,15 @@ CREATE TABLE patron (
     last_Name TEXT NOT NULL,
     email TEXT NOT NULL,
     library_card_number INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE invite_code (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    code TEXT NOT NULL,
+    valid BOOLEAN NOT NULL DEFAULT TRUE,
+    user_email TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );

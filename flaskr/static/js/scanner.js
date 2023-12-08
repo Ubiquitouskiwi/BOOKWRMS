@@ -1,8 +1,8 @@
 // check compatability
 var video = document.querySelector("#barcode-scanner");
 var cameraOptions = document.querySelector("#camera-options");
-var playButton = document.querySelector("#play-button");
-var barcodeResult = document.querySelector("#result");
+var playButton = document.querySelector("#scan-button");
+var barcodeResult = document.querySelector("#isbn");
 let streamStarted = false;
 
 const constraints = {
@@ -25,12 +25,14 @@ const getCameraSelection = async () => {
     const devices = await navigator.mediaDevices.enumerateDevices();
     const videoDevices = devices.filter(device => device.kind === 'videoinput');
     const options = videoDevices.map(videoDevice => {
-        return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`;
+        var label = videoDevice.label;
+        if (label === "") {
+            label = `Camera ${videoDevice.kind}`;
+        }
+        return `<option value="${videoDevice.deviceId}">${label}</option>`;
     });
     cameraOptions.innerHTML = options.join('');
 }
-
-getCameraSelection();
 
 playButton.onclick = () => {
     if (streamStarted) {
@@ -77,7 +79,10 @@ Quagga.init({
     Quagga.start();
     Quagga.onDetected(function (data) {
         console.log(data);
-        barcodeResult.innerHTML = data.codeResult.code;
-
+        barcodeResult.value = data.codeResult.code;
+        video.autoplay = false
+        streamStarted = false
     })
-})
+});
+
+getCameraSelection();

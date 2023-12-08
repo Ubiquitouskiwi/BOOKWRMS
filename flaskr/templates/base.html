@@ -26,6 +26,7 @@
             <div class="collapse navbar-collapse" id="navigation">
 
                 <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home.index') }}">Home</a></li>
                     {% if g.user %}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('home.add_book') }}">Add Book</a>
@@ -51,9 +52,6 @@
         <header>
             {% block header %}{% endblock %}
         </header>
-        {% for message in get_flashed_messages() %}
-        <div class="flash">{{ message }}</div>
-        {% endfor %}
         {% block content %}{% endblock %}
     </div>
 

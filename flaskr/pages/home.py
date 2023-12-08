@@ -10,6 +10,7 @@ from flask import (
     session,
 )
 from werkzeug.exceptions import abort
+from datetime import datetime
 
 from flaskr.pages.auth import login_required
 from flaskr.models.book import Book
@@ -66,36 +67,41 @@ def add_book():
             ol_client = OpenLibraryClient()
             current_app.logger.info("No errors found")
             if isbn:
-                current_app.logger.info("ISBN is not blank")
                 book_resp = ol_client.search_isbn(isbn)
-                author_resp = ol_client.get_author_from_work(book_resp)
-                cover = f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}.jpg"
-                author_name_split = author_resp.name.split(" ")
-                first_name = author_name_split[0]
-                last_name = author_name_split[-1]
-                middle_name = None
-                if len(author_name_split) == 3:
-                    middle_name = author_name_split[1]
-                author = Author(
-                    first_name=first_name,
-                    middle_name=middle_name,
-                    last_name=last_name,
-                    olid=author_resp.olid,
-                )
-                author.save()
-                author = Author()
-                author.inflate_by_name(
-                    author_resp.name.split(" ")[0], author_resp.name.split(" ")[-1]
-                )
-                book = Book(
-                    title=book_resp.title,
-                    isbn=isbn,
-                    cover_url=cover,
-                    author_id=author.id,
-                )
-                book.save()
+                if book_resp is not None:
+                    author_resp = ol_client.get_author_from_work(book_resp)
+                    try:
+                        cover = f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}.jpg"
+                    except AttributeError:
+                        cover = "https://www.mobileread.com/forums/attachment.php?attachmentid=111284&d=1378756884"
+                    author_name_split = author_resp.name.split(" ")
+                    first_name = author_name_split[0]
+                    last_name = author_name_split[-1]
+                    middle_name = None
+                    if len(author_name_split) == 3:
+                        middle_name = author_name_split[1]
+                    author = Author(
+                        first_name=first_name,
+                        middle_name=middle_name,
+                        last_name=last_name,
+                        olid=author_resp.olid,
+                    )
+                    author.save()
+                    author = Author()
+                    author.inflate_by_name(
+                        author_resp.name.split(" ")[0], author_resp.name.split(" ")[-1]
+                    )
+                    book = Book(
+                        title=book_resp.title,
+                        isbn=isbn,
+                        cover_url=cover,
+                        author_id=author.id,
+                    )
+                    book.save()
 
-        return redirect(url_for("home.index"))
+                    return redirect(url_for("home.index"))
+                else:
+                    flash(f"ISBN: {isbn} is not a valid barcode.")
 
     return render_template("home/add_book.html")
 
@@ -132,6 +138,26 @@ def edit_book(id):
     return render_template("home/edit_book.html", book=book)
 
 
+@bp.route("/<int:id>/return_book", methods=["GET"])
+@login_required
+def return_book(id):
+    db = get_db()
+    db.execute(
+        """
+        UPDATE 
+            checkout_log
+        SET
+            returned = True
+        WHERE
+            book_id = ?
+    """,
+        [id],
+    )
+    db.commit()
+
+    return redirect(url_for("home.index"))
+
+
 @bp.route("/<int:id>/delete_book", methods=["POST"])
 @login_required
 def delete_book(id):
@@ -149,12 +175,38 @@ def delete_book(id):
 @login_required
 def checkout_book(id):
     if request.method == "POST":
-        book = Book()
-        book.inflate_by_id(id)
+        patron_name = request.form["patron-name"]
+        checkin_date = request.form["checkin-date"]
+        print(checkin_date)
+        checkin_date = datetime.strptime(checkin_date, "%Y-%m-%d")
+        print(checkin_date)
+        error = None
 
-        if book.id is not None:
-            checkout = Checkout()
-        return redirect(url_for("home.index"))
+        if not checkin_date:
+            error = "Checkin Date cannot be empty"
+        elif not patron_name:
+            error = "Patron name cannot be empty"
+        elif checkin_date <= datetime.today():
+            error = "Checkin Date must be later than today."
+
+        if error is None:
+            print("No error")
+            book = Book()
+            book.inflate_by_id(id)
+
+            if book.id is not None:
+                print("ID is not none")
+                checkout = Checkout()
+                checkout.book_id = id
+                checkout.patron_name = patron_name
+                checkout.checkin_date = checkin_date
+                checkout.renew_count = 0
+                checkout.save()
+                print("Saved book")
+
+            return redirect(url_for("home.index"))
+        else:
+            flash(error)
     return render_template("home/checkout_book.html")
 
 
@@ -174,3 +226,75 @@ def book_details(id):
     book.summary = book_resp.description
 
     return render_template("home/book_details.html", book=book)
+
+
+@bp.route("/search_book", methods=["POST"])
+def search_book():
+    search_type = request.form["search_type"]
+    search_criteria = request.form["search_criteria"]
+    if search_criteria != "":
+        db = get_db()
+        print("search")
+        if search_type == "isbn":
+            try:
+                print("isbn search")
+                books = db.execute(
+                    """
+                    SELECT 
+                        book.id as id, 
+                        book.title as title, 
+                        book.isbn as isbn, 
+                        book.illustration_url as illustration_url,
+                        author.first_name as first_name,
+                        author.last_name as last_name
+                    FROM
+                        book book
+                    JOIN
+                        author author
+                    ON 
+                        book.author_id = author.id
+                    WHERE
+                        book.deleted = FALSE
+                        AND author.deleted = FALSE
+                        AND isbn = ?
+                """,
+                    [int(search_criteria)],
+                ).fetchall()
+                return render_template("home/index.html", books=books)
+            except ValueError:
+                error = f"{search_criteria} is not a ISBN."
+                flash(error)
+        elif search_type == "title":
+            print("title search")
+            criteria_split = search_criteria.split(" ")
+            where_clause = " AND ("
+            for index, word in enumerate(criteria_split):
+                if index > 0:
+                    where_clause += " OR "
+                where_clause += f' book.title LIKE "%{word}%" '
+            sql = (
+                """SELECT 
+                book.id as id, 
+                book.title as title, 
+                book.isbn as isbn, 
+                book.illustration_url as illustration_url,
+                author.first_name as first_name,
+                author.last_name as last_name
+            FROM
+                book book
+            JOIN
+                author author
+            ON 
+                book.author_id = author.id
+            WHERE
+                book.deleted = FALSE
+                AND author.deleted = FALSE"""
+                + where_clause
+                + ")"
+            )
+            print(sql)
+            books = db.execute(sql).fetchall()
+            print(books)
+            return render_template("home/index.html", books=books)
+
+    return redirect(url_for("home.index"))
