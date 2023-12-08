@@ -33,6 +33,7 @@ def generate_file():
     checkouts = db.execute("SELECT * FROM checkout_log").fetchall()
     logins = db.execute("SELECT * FROM login").fetchall()
     users = db.execute("SELECT * FROM user").fetchall()
+    invite_codes = db.execute("SELECT * FROM invite_code").fetchall()
 
     data = {"author": [], "book": [], "checkout_log": [], "login": [], "user": []}
     for item in authors:
@@ -64,6 +65,12 @@ def generate_file():
         for key in item:
             row.append(str(key))
         data["user"].append(str(row).replace("[", "(").replace("]", ")"))
+
+    for item in invite_codes:
+        row = []
+        for key in item:
+            row.append(str(key))
+        data["invite_code"].append(str(row).replace("[", "(").replace("]", ")"))
     print(data)
 
     return jsonify(data)
