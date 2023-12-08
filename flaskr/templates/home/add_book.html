@@ -5,10 +5,25 @@
 {% endblock %}
 
 {% block content %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages|length > 0 %}
+<div class="alert alert-danger" role="alert">
+  {% if "ISBN:" in messages[0] %}
+  {{ messages[0] }}
+  <a href="https://openlibrary.org/" class="text-decoration-none" target="_blank" style="color:red;">Try Searching
+    Online <i class="bi bi-box-arrow-up-right"></i></a>
+  {% else %}
+  {{ messages[0] }}
+  {% endif %}
+</div>
+{% endif %}
+{% endwith %}
 <form method="post">
+
   <div class="form mb-3">
     <label for="isbn">ISBN</label>
-    <input type="tel" placeholder="eg. 978-0140177398" class="form-control" name="isbn" id="isbn">
+    <input type="tel" placeholder="e.g. 9780140177398" class="form-control" name="isbn" id="isbn">
   </div>
   <div class="form-floating mb-3">
     <input class="btn btn-success" type="submit" value="Add">
@@ -16,4 +31,19 @@
     <input type="reset" class="btn btn-warning" href="/" value="Clear">
   </div>
 </form>
+<div class="container">
+  <div class="row">
+    <div class="col col-md-4">
+      <select class="form-select" name="" id="camera-options">
+        <option value="video-options">Select camera</option>
+      </select>
+    </div>
+    <div class="col">
+      <button id="scan-button" class="btn btn-success play" title="Scan">Scan Barcode</button>
+    </div>
+  </div>
+  <br />
+  <video autoplay id="barcode-scanner" width="100%" height="200px"> </video>
+</div>
+<script src="../../static/js/scanner.js"></script>
 {% endblock %}

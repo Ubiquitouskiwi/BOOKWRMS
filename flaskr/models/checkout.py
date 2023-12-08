@@ -1,3 +1,5 @@
+import datetime
+
 from .base_object import BaseObject
 from flaskr.data_store.db import get_db
 
@@ -7,7 +9,7 @@ class Checkout(BaseObject):
         self,
         id=None,
         book_id=None,
-        patron_id=None,
+        patron_name=None,
         checkout_date=None,
         checkout_duration=None,
         renew_count=None,
@@ -15,7 +17,7 @@ class Checkout(BaseObject):
     ):
         self.id = id
         self.book_id = book_id
-        self.patron_id = patron
+        self.patron_name = patron_name
         self.checkout_date = checkout_date
         self.checkout_duration = checkout_duration
         self.renew_count = renew_count
@@ -34,20 +36,24 @@ class Checkout(BaseObject):
 
     def save(self):
         # self._error_check()
-
+        print("Saving checkout")
+        today = datetime.datetime.today()
+        if type(self.checkin_date) == type(""):
+            self.checkin_date = datetime.datetime.strptime(
+                self.checkin_date, "%Y-%M-%d"
+            )
+        diff = self.checkin_date - today
+        checkout_duration = diff.days
         query = """
             INSERT INTO
-                checkout_log (book_id, patron_id, checkout_date, checkout_duration, checkin_date, renew_count)
+                checkout_log (book_id, patron_name, checkout_duration, checkin_date, renew_count)
             VALUES
-                (?, ?, ?, ?, ?, ?)
-            WHERE
-                deleted = false
+                (?, ?, ?, ?, ?)
         """
         query_params = [
             self.book_id,
-            self.patron,
-            self.checkout_date,
-            self.checkout_duration,
+            self.patron_name,
+            checkout_duration,
             self.checkin_date,
             self.renew_count,
         ]
@@ -55,6 +61,7 @@ class Checkout(BaseObject):
         self._check_db()
         self._db.execute(query, query_params)
         self._db.commit()
+        print("Done Checking out")
 
     def inflate_by_id(self, id):
         where_clause = "id = ?"
