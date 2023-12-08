@@ -1,7 +1,9 @@
 import sqlite3
+
 import os
 import random
 import string
+
 
 import click
 from flask import current_app, g
