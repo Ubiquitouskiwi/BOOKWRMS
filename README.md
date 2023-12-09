@@ -1,6 +1,6 @@
 # BOOKWRMS
 
-[![License](https://img.shields.io/badge/license-AGPL-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/license/mit/)
 [![Flask](https://img.shields.io/badge/flask-3.0-brightgreen.svg?logo=flask)](https://flask.palletsprojects.com/en/3.0.x/)
 [![Python](https://img.shields.io/badge/python-3.11-orange.svg?logo=python)](https://www.python.org/)
 
