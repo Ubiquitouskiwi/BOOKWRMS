@@ -2,7 +2,7 @@
 
 If you believe you have found a security vulnerability, follow these steps:
 
-1. **Privately Disclose the Issue**: Send an email to our [security team](mailto:security@example.com) with a detailed description of the vulnerability. Do not disclose the issue publicly until it has been addressed.
+1. **Privately Disclose the Issue**: Send an email to our [security team](mailto:starlingtek@gmail.com) with a detailed description of the vulnerability. Do not disclose the issue publicly until it has been addressed.
 
 2. **Provide Information**: Include information about the environment, affected versions, and any potential mitigations you may have identified.
 
