@@ -38,8 +38,6 @@ def init_db():
         code = "".join([alpha_code, int_code])
         db.execute("INSERT INTO invite_code (code) VALUES (?)", [code])
         db.commit()
-    db.execute("INSERT INTO invite_code (code) VALUES (?)", ["JB2270"])
-    db.commit()
 
 
 @click.command("init-db")

@@ -35,7 +35,14 @@ def generate_file():
     users = db.execute("SELECT * FROM user").fetchall()
     invite_codes = db.execute("SELECT * FROM invite_code").fetchall()
 
-    data = {"author": [], "book": [], "checkout_log": [], "login": [], "user": []}
+    data = {
+        "author": [],
+        "book": [],
+        "checkout_log": [],
+        "login": [],
+        "user": [],
+        "invite_code": [],
+    }
     for item in authors:
         row = []
         for index, key in enumerate(item):
@@ -69,6 +76,7 @@ def generate_file():
     for item in invite_codes:
         row = []
         for key in item:
+            print(key)
             row.append(str(key))
         data["invite_code"].append(str(row).replace("[", "(").replace("]", ")"))
     print(data)
