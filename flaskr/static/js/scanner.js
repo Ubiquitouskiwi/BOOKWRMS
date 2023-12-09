@@ -61,10 +61,12 @@ const handleStream = (stream) => {
 }
 
 Quagga.init({
-    inputStream: {
-        name: "Live",
-        type: "LiveStream",
-        target: document.querySelector("#barcode-scanner")
+    name: "Live",
+    type: "LiveStream",
+    constraints: {
+        width: 640,
+        height: 480,
+        facingMode: "environment",
     },
     decoder: {
         readers: ["ean_reader"]

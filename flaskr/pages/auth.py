@@ -71,15 +71,16 @@ def register():
                         (first_name.lower(), last_name.lower(), email, True),
                     )
                     db.commit()
+
+                    db.execute(
+                        "UPDATE invite_code SET valid = FALSE, user_email = ? WHERE id = ?",
+                        [email, invite_code_id],
+                    )
+                    db.commit()
+
+                    return redirect(url_for("auth.login"))
                 except db.IntegrityError:
                     error = f"{first_name} {last_name} is already registered"
-                db.execute(
-                    "UPDATE invite_code SET valid = FALSE, user_email = ? WHERE id = ?",
-                    [email, invite_code_id],
-                )
-                db.commit()
-
-                return redirect(url_for("auth.login"))
         flash(error)
     return render_template("auth/register.html")
 
