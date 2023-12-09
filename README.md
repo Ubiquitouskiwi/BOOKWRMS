@@ -4,7 +4,7 @@
 [![Flask](https://img.shields.io/badge/flask-3.0-brightgreen.svg?logo=flask)](https://flask.palletsprojects.com/en/3.0.x/)
 [![Python](https://img.shields.io/badge/python-3.11-orange.svg?logo=python)](https://www.python.org/)
 
-![Screenshot](doc_files/Screenshot_2023-12-08_210654.png|width=50)
+![Screenshot](doc_files/home-page-screenshot.png)
 
 This is a home library system to keep track who you lend books to as well as keep track of what books you have. BOOKWRMS stands for  "Becca's Online Organized Knowledge Warehouse and Resource Management System."
 
