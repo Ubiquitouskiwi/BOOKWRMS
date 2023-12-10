@@ -154,9 +154,7 @@ def add_book():
                     )
                     author.save()
                     author = Author()
-                    author.inflate_by_name(
-                        author_resp.name.split(" ")[0], author_resp.name.split(" ")[-1]
-                    )
+                    author.inflate_by_olid(author_resp.olid)
                     book = Book(
                         title=book_resp.title,
                         isbn=isbn,
