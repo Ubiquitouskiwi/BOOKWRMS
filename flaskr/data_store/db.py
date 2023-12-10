@@ -38,7 +38,7 @@ def init_db():
         code = "".join([alpha_code, int_code])
         db.execute("INSERT INTO invite_code (code) VALUES (?)", [code])
         db.commit()
-        print(alpha_code)
+        print(code)
 
 
 @click.command("init-db")
