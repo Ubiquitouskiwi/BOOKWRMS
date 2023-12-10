@@ -53,7 +53,9 @@ class Author(BaseObject):
         where_clause = "olid = ?"
         query = self._inflate_query_base.format(where_clause)
         query_params = author_olid
-        self._inflate[query, query_params]
+        print(query)
+        print(query_params)
+        self._inflate(query, [query_params])
 
     def _inflate(self, query, query_params):
         self._check_db()
