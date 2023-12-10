@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS patron;
 
 DROP TABLE IF EXISTS invite_code;
 
+DROP TABLE IF EXISTS user_book_tag;
+
 /* TABLE CREATION */
 /* table that has author information. OLID is ID for open library */
 CREATE TABLE author (
@@ -109,11 +111,26 @@ CREATE TABLE patron (
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+/* Table for invite codes so not everyone can make an account */
 CREATE TABLE invite_code (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     code TEXT NOT NULL,
     valid BOOLEAN NOT NULL DEFAULT TRUE,
     user_email TEXT,
+    modify_date TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+/* Tags to add to books. e.g. Read, Recommended, Sci-fi */
+CREATE TABLE user_book_tag (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    book_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    tag_value TEXT NOT NULL,
+    tag_color TEXT NOT NULL DEFAULT "white",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (book_id) REFERENCES book (id)
 );
