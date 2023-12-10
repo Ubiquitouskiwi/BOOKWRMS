@@ -45,7 +45,76 @@ def index():
                 AND author.deleted = FALSE
         """
     ).fetchall()
-    return render_template("home/index.html", books=books)
+    tags = {}
+    for book in books:
+        tags[book["id"]] = []
+        fetched_tags = db.execute(
+            """
+            SELECT
+                id,
+                tag_value,
+                tag_color
+            FROM
+                user_book_tag
+            WHERE
+                deleted = FALSE
+                AND book_id = ?
+            """,
+            [book["id"]],
+        ).fetchall()
+        tags[book["id"]] = fetched_tags
+    return render_template("home/index.html", books=books, tags=tags)
+
+
+@bp.route("/tag/<int:id>/delete-tag", methods=["GET"])
+@login_required
+def delete_tag(id):
+    db = get_db()
+
+    db.execute(
+        """
+        DELETE FROM
+            user_book_tag
+        WHERE
+            id = ?
+        """,
+        [id],
+    )
+    db.commit()
+
+    return redirect(request.referrer)
+
+
+@bp.route("/add-tag", methods=["POST"])
+@login_required
+def add_tag():
+    tag_value = request.form["tag_value"]
+    tag_color = request.form["tag_color"]
+    book_id = request.form["modal_book_id"]
+    error = None
+
+    if not tag_value:
+        error = "Must supply tag value."
+    if not tag_color:
+        error = "Must supply tag color."
+
+    if error is None:
+        tag_color = tag_color.upper().strip("#")
+        db = get_db()
+        db.execute(
+            """
+            INSERT INTO
+                user_book_tag (book_id, user_id, tag_value, tag_color)
+            VALUES
+                (?, ?, ?, ?)            
+            """,
+            [book_id, 1, tag_value, tag_color],
+        )
+        db.commit()
+        redirect
+    else:
+        flash(error)
+    return redirect(request.referrer)
 
 
 @bp.route("/add_book", methods=["GET", "POST"])
@@ -76,13 +145,10 @@ def add_book():
                         cover = "https://www.mobileread.com/forums/attachment.php?attachmentid=111284&d=1378756884"
                     author_name_split = author_resp.name.split(" ")
                     first_name = author_name_split[0]
-                    last_name = author_name_split[-1]
-                    middle_name = None
-                    if len(author_name_split) == 3:
-                        middle_name = author_name_split[1]
+                    if len(author_name_split) > 1:
+                        last_name = author_name_split[1]
                     author = Author(
                         first_name=first_name,
-                        middle_name=middle_name,
                         last_name=last_name,
                         olid=author_resp.olid,
                     )
@@ -219,13 +285,30 @@ def book_details(id):
     book_resp = client.search_isbn(book.isbn)
     author_resp = client.get_author_from_work(book_resp)
 
+    db = get_db()
+
+    fetched_tags = db.execute(
+        """
+            SELECT
+                id,
+                tag_value,
+                tag_color
+            FROM
+                user_book_tag
+            WHERE
+                deleted = FALSE
+                AND book_id = ?
+            """,
+        [id],
+    ).fetchall()
+
     try:
         book.author_links = author_resp.links
     except AttributeError:
         current_app.logger.info(f"Links not found for {book.author_id}")
     book.summary = book_resp.description
 
-    return render_template("home/book_details.html", book=book)
+    return render_template("home/book_details.html", book=book, tags=fetched_tags)
 
 
 @bp.route("/search_book", methods=["POST"])

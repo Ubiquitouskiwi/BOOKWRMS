@@ -73,7 +73,7 @@ def register():
                     db.commit()
 
                     db.execute(
-                        "UPDATE invite_code SET valid = FALSE, user_email = ? WHERE id = ?",
+                        "UPDATE invite_code SET valid = FALSE, user_email = ?, modify_date = CURRENT_TIMESTAMP WHERE id = ?",
                         [email, invite_code_id],
                     )
                     db.commit()

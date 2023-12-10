@@ -7,6 +7,31 @@
 {% endblock %}
 
 {% block content %}
+<div class="modal fade" id="add-tag-modal" tabindex="-1" aria-labelledby="modal-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modal-label">Add Tag</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/add-tag" method="post">
+                    <input id="modal_book_id" name="modal_book_id" type="text" hidden>
+                    <div class="mb-3">
+                        <label for="tag_value" class="col-form-label">Tag Value</label>
+                        <input type="text" class="form-control" name="tag_value" id="tag_value">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tag_color" class="col-form-label">Tag Color</label>
+                        <input type="color" name="tag_color" class="form-control corm-control-color" id="tag_color"
+                            title="Choose color">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="text-center">
     <img src="{{ book.cover_url }}" width="200" height="300" alt="Book Cover: {{ book.title }}">
     <br>
@@ -31,6 +56,17 @@
     {% endif %}
 </div>
 <hr>
+{% if tags %}
+<div class="container">
+    <button style="border: 0px;" id="{{ book['id'] }}" class="btn btn-outline-success button-link add-tag-button btn-sm"
+        data-bs-target="#add-tag-modal" data-bs-toggle="modal" title="Add tag"><i class="bi bi-tag"></i></button>
+    {% for tag in tags %}
+    <a href="/tag/{{ tag['id'] }}/delete-tag" title="Click to delete"><img
+            src="https://img.shields.io/badge/{{ tag['tag_value'] }}-{{ tag['tag_color'] }}.svg?logo=book"></a>
+    {% endfor %}
+</div>
+<br />
+{% endif %}
 <div>
     <h4>Summary</h4>
     <p class="summary"><md-block>{{ book['summary'] }}</md-block></p>
@@ -38,17 +74,15 @@
 </div>
 <div>
     <h4>Checkout History</h4>
-
+    {% if book.checkout_log %}
     <table class="table">
         <tr>
             <th scope="col">User</th>
             <th scope="col">Returned</th>
             <th scope="col">Checkout Date</th>
             <th scope="col">Check In Date</th>
-            <th scope="col">Expected Return Date</th>
             <th scope="col">Times Renewed</th>
         </tr>
-        {% if book.checkout_log %}
         {% for checkout in book.checkout_log %}
         <tr>
             <td>{{ checkout['first_name'] + " " + checkout['last_name'] }}</td>
@@ -63,10 +97,11 @@
             <td>{{ checkout['renew_count'] }}</td>
         </tr>
         {% endfor %}
-        {% else %}
-        <p>No checkout history.</p>
-        {% endif %}
     </table>
+    {% else %}
+    <p>No checkout history.</p>
+    {% endif %}
+    <script src="../../static/js/home_index.js"></script>
 </div>
 
 
