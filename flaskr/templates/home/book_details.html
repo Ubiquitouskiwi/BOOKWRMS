@@ -49,7 +49,7 @@
     <ul>
 
         {% for link in book['author_links'] %}
-        <li><a type="noreferrer" href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
+        <li><a rel="noopener noreferrer" href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
         {% endfor %}
 
     </ul>
