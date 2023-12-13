@@ -11,6 +11,7 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 from datetime import datetime
+from urlparse import urlparse
 
 from flaskr.pages.auth import login_required
 from flaskr.models.book import Book
@@ -20,6 +21,14 @@ from flaskr.data_store.db import get_db
 from ..helpers.openlibrary_engine import OpenLibraryClient
 
 bp = Blueprint("home", __name__)
+
+
+def validate_url(url):
+    try:
+        parse_result = urlparse(url)
+        return all([parse_result.scheme, result.netloc, parse_result.path])
+    except:
+        return False
 
 
 @bp.route("/")
@@ -82,7 +91,7 @@ def delete_tag(id):
     )
     db.commit()
 
-    if "bookwrms.org" in request.base_url:
+    if validate_url(request.referrer):
         return redirect(request.referrer)
     else:
         return redirect(url_for("home.index"))
@@ -118,7 +127,7 @@ def add_tag():
     else:
         flash(error)
 
-    if "bookwrms.org" in request.base_url:
+    if validate_url(request.referrer):
         return redirect(request.referrer)
     else:
         return redirect(url_for("home.index"))
