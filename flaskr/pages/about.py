@@ -94,48 +94,38 @@ def insert_db():
         db = get_db()
 
         for value in db_data["login"]:
-            sql = (
+            db.execute(
                 "INSERT INTO login (email, password, created_at, deleted) VALUES (?, ?, ?, ?)",
                 value.split(", ")[1:],
             )
-            print(sql)
-            db.execute(sql)
             db.commit()
 
         for value in db_data["user"]:
-            sql = (
+            db.execute(
                 "INSERT INTO user (first_name, last_name, email, is_admin, created_at, deleted) VALUES (?, ?, ?, ?, ?)",
                 value.split(", ")[1:],
             )
-            print(sql)
-            db.execute(sql)
             db.commit()
 
         for value in db_data["author"]:
-            sql = (
+            db.execute(
                 "INSERT INTO author (first_name, last_name, middle_name, olid, created_at, deleted) VALUES (?, ?, ?, ?, ?, ?)",
                 value.split(", ")[1:],
             )
-            print(sql)
-            db.execute(sql)
             db.commit()
 
         for value in db_data["book"]:
-            sql = (
+            db.execute(
                 "INSERT INTO book (title, author_id, isbn, illustration_url, olid, created_at, deleted) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 value.split(", ")[1:],
             )
-            print(sql)
-            db.execute(sql)
             db.commit()
 
         for value in db_data["checkout_log"]:
-            sql = (
+            db.execute(
                 "INSERT INTO checkout_log (book_id, patron_name, checkout_date, checkout_duration, checkin_date, renew_count, returned, created_at, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 value.split(", ")[1:],
             )
-            print(sql)
-            db.execute(sql)
             db.commit()
 
     return render_template("about/insert_db.html")
