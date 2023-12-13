@@ -53,7 +53,7 @@ class Book(BaseObject):
                 VALUES
                     (?, ?, ?, ?)
                 ON CONFLICT(isbn) DO UPDATE SET 
-                    title = ?, author_id = ?, isbn = ?, illustration_url = ?
+                    title = ?, author_id = ?, isbn = ?, illustration_url = ?, DELETED = ?
                 """
         query_params = [
             self.title,
@@ -64,6 +64,7 @@ class Book(BaseObject):
             self.author_id,
             self.isbn,
             self.cover_url,
+            False,
         ]
         self._db.execute(query, query_params)
         self._db.commit()

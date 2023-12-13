@@ -95,9 +95,8 @@ def insert_db():
 
         for value in db_data["login"]:
             sql = (
-                "INSERT INTO login (email, password, created_at, deleted) VALUES "
-                + "("
-                + ",".join(value.split(", ")[1:])
+                "INSERT INTO login (email, password, created_at, deleted) VALUES (?, ?, ?, ?)",
+                value.split(", ")[1:],
             )
             print(sql)
             db.execute(sql)
@@ -105,9 +104,8 @@ def insert_db():
 
         for value in db_data["user"]:
             sql = (
-                "INSERT INTO user (first_name, last_name, email, is_admin, created_at, deleted) VALUES "
-                + "("
-                + ",".join(value.split(", ")[1:])
+                "INSERT INTO user (first_name, last_name, email, is_admin, created_at, deleted) VALUES (?, ?, ?, ?, ?)",
+                value.split(", ")[1:],
             )
             print(sql)
             db.execute(sql)
@@ -115,9 +113,8 @@ def insert_db():
 
         for value in db_data["author"]:
             sql = (
-                "INSERT INTO author (first_name, last_name, middle_name, olid, created_at, deleted) VALUES "
-                + "("
-                + ",".join(value.split(", ")[1:])
+                "INSERT INTO author (first_name, last_name, middle_name, olid, created_at, deleted) VALUES (?, ?, ?, ?, ?, ?)",
+                value.split(", ")[1:],
             )
             print(sql)
             db.execute(sql)
@@ -125,9 +122,8 @@ def insert_db():
 
         for value in db_data["book"]:
             sql = (
-                "INSERT INTO book (title, author_id, isbn, illustration_url, olid, created_at, deleted) VALUES "
-                + "("
-                + ",".join(value.split(", ")[1:])
+                "INSERT INTO book (title, author_id, isbn, illustration_url, olid, created_at, deleted) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                value.split(", ")[1:],
             )
             print(sql)
             db.execute(sql)
@@ -135,9 +131,8 @@ def insert_db():
 
         for value in db_data["checkout_log"]:
             sql = (
-                "INSERT INTO checkout_log (book_id, patron_name, checkout_date, checkout_duration, checkin_date, renew_count, returned, created_at, deleted) VALUES "
-                + "("
-                + ",".join(value.split(", ")[1:])
+                "INSERT INTO checkout_log (book_id, patron_name, checkout_date, checkout_duration, checkin_date, renew_count, returned, created_at, deleted) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                value.split(", ")[1:],
             )
             print(sql)
             db.execute(sql)
