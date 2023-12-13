@@ -56,11 +56,13 @@
         <div class="card">
             <img class="card-img-top img-thumbnail" style="max-height: 400px;" src="{{ book['illustration_url'] }}"
                 alt="Book Cover">
-            {% if tags %}
+
             <div class="card-header">
+                {% if g.user %}
                 <button style="border: 0px;" id="{{ book['id'] }}"
                     class="btn btn-outline-success button-link add-tag-button btn-sm" data-bs-target="#add-tag-modal"
                     data-bs-toggle="modal" title="Add tag"><i class="bi bi-tag"></i></button>
+                {% endif %}
                 {% for book_id in tags %}
                 {% if book_id == book['id'] %}
                 {% for tag in tags[book_id] %}
@@ -70,7 +72,6 @@
                 {% endif %}
                 {% endfor %}
             </div>
-            {% endif %}
             <div class="card-body">
                 <h5 class="card-title"><u>{{ book['title'] }}</u></h5>
                 <p class="card-subtitle mb-1 text-muted">By: {{ book['first_name'] }} {{ book['last_name']}}</h6>

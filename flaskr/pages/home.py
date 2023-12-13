@@ -82,7 +82,10 @@ def delete_tag(id):
     )
     db.commit()
 
-    return redirect(request.referrer)
+    if "bookwrms.org" in request.base_url:
+        return redirect(request.referrer)
+    else:
+        return redirect(url_for("home.index"))
 
 
 @bp.route("/add-tag", methods=["POST"])
@@ -106,7 +109,7 @@ def add_tag():
             INSERT INTO
                 user_book_tag (book_id, user_id, tag_value, tag_color)
             VALUES
-                (?, ?, ?, ?)            
+                (?, ?, ?, ?)           
             """,
             [book_id, 1, tag_value, tag_color],
         )
@@ -114,7 +117,11 @@ def add_tag():
         redirect
     else:
         flash(error)
-    return redirect(request.referrer)
+
+    if "bookwrms.org" in request.base_url:
+        return redirect(request.referrer)
+    else:
+        return redirect(url_for("home.index"))
 
 
 @bp.route("/add_book", methods=["GET", "POST"])
@@ -231,6 +238,8 @@ def delete_book(id):
     if book.id is not None:
         db = get_db()
         db.execute("UPDATE book SET deleted = TRUE WHERE id = ?", [id])
+        db.commit()
+        db.execute("UPDATE user_book_tag SET deleted = TRUE WHERE book_id = ?", [id])
         db.commit()
         return redirect(url_for("home.index"))
 

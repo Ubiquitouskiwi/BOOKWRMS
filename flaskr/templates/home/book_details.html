@@ -49,7 +49,7 @@
     <ul>
 
         {% for link in book['author_links'] %}
-        <li><a href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
+        <li><a type="noreferrer" href="{{link['url']}}" target="_blank">{{ link['title'] }}</a></li>
         {% endfor %}
 
     </ul>
@@ -58,8 +58,10 @@
 <hr>
 {% if tags %}
 <div class="container">
+    {% if g.user %}
     <button style="border: 0px;" id="{{ book['id'] }}" class="btn btn-outline-success button-link add-tag-button btn-sm"
         data-bs-target="#add-tag-modal" data-bs-toggle="modal" title="Add tag"><i class="bi bi-tag"></i></button>
+    {% endif %}
     {% for tag in tags %}
     <a href="/tag/{{ tag['id'] }}/delete-tag" title="Click to delete"><img
             src="https://img.shields.io/badge/{{ tag['tag_value'] }}-{{ tag['tag_color'] }}.svg?logo=book"></a>
