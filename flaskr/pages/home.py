@@ -11,7 +11,7 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 from datetime import datetime
-from urlparse import urlparse
+import urllib
 
 from flaskr.pages.auth import login_required
 from flaskr.models.book import Book
@@ -25,7 +25,7 @@ bp = Blueprint("home", __name__)
 
 def validate_url(url):
     try:
-        parse_result = urlparse(url)
+        parse_result = urllib.parse(url)
         return all([parse_result.scheme, result.netloc, parse_result.path])
     except:
         return False
