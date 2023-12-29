@@ -9,7 +9,6 @@ import pprint
 class OpenLibraryClient:
     def __init__(self):
         self.client = OpenLibrary()
-        # self.db = get_db()
 
     def search_isbn(self, isbn):
         return_value = None
@@ -32,16 +31,3 @@ class OpenLibraryClient:
             author = self.get_author(author_olid)
 
         return author
-
-    def _check_db(self, first_name, last_name):
-        return self.db.execute(
-            "SELECT * FROM authors WHERE first_name = ? AND last_name = ?",
-            (first_name, last_name),
-        )
-
-
-# pp = pprint.PrettyPrinter()
-# ol = OpenLibraryClient()
-# work = ol.search_isbn(9780062502179)
-# author = ol.get_author_from_work(work)
-# print(author)

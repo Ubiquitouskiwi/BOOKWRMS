@@ -34,7 +34,8 @@ def validate_url(url):
 @bp.route("/")
 def index():
     db = get_db()
-    books = db.execute(
+    db_cursor = db.cursor()
+    db_cursor.execute(
         """
             SELECT 
                 book.id as id, 
@@ -53,11 +54,12 @@ def index():
                 book.deleted = FALSE
                 AND author.deleted = FALSE
         """
-    ).fetchall()
+    )
+    books = db_cursor.fetchall()
     tags = {}
     for book in books:
         tags[book["id"]] = []
-        fetched_tags = db.execute(
+        db_cursor.execute(
             """
             SELECT
                 id,
@@ -67,29 +69,35 @@ def index():
                 user_book_tag
             WHERE
                 deleted = FALSE
-                AND book_id = ?
+                AND book_id = %s
             """,
             [book["id"]],
-        ).fetchall()
+        )
+        fetched_tags = db_cursor.fetchall()
         tags[book["id"]] = fetched_tags
+    db_cursor.close()
     return render_template("home/index.html", books=books, tags=tags)
 
 
 @bp.route("/tag/<int:id>/delete-tag", methods=["GET"])
 @login_required
 def delete_tag(id):
-    db = get_db()
+    db = get_db("write")
+    db_cursor = db.cursor()
 
     db.execute(
         """
-        DELETE FROM
+        UPDATE
             user_book_tag
+        SET
+            deleted = TRUE
         WHERE
-            id = ?
+            id = %s
         """,
         [id],
     )
     db.commit()
+    db_cursor.close()
 
     if validate_url(request.referrer):
         return redirect(request.referrer)
@@ -112,18 +120,20 @@ def add_tag():
 
     if error is None:
         tag_color = tag_color.upper().strip("#")
-        db = get_db()
+        db = get_db("write")
+        db_cursor = db.cursor()
+        user_id = session["user_id"]
         db.execute(
             """
             INSERT INTO
                 user_book_tag (book_id, user_id, tag_value, tag_color)
             VALUES
-                (?, ?, ?, ?)           
+                (%s, %s, %s, %s)           
             """,
-            [book_id, 1, tag_value, tag_color],
+            [book_id, user_id, tag_value, tag_color],
         )
         db.commit()
-        redirect
+        db_cursor.close()
     else:
         flash(error)
 
@@ -158,7 +168,7 @@ def add_book():
                     try:
                         cover = f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}.jpg"
                     except AttributeError:
-                        cover = "https://www.mobileread.com/forums/attachment.php?attachmentid=111284&d=1378756884"
+                        cover = "https://www.mobileread.com/forums/attachment.php%sattachmentid=111284&d=1378756884"
                     author_name_split = author_resp.name.split(" ")
                     first_name = author_name_split[0]
                     if len(author_name_split) > 1:
@@ -208,12 +218,14 @@ def edit_book(id):
         if error is not None:
             flash(error)
         else:
-            db = get_db()
+            db = get_db("write")
+            db_cursor = db.cursor()
             db.execute(
-                "UPDATE book SET title = ?, isbn = ?, illustration_url = ? WHERE id = ?",
+                "UPDATE book SET title = %s, isbn = %s, illustration_url = %s WHERE id = %s",
                 (title, isbn, cover_url, id),
             )
             db.commit()
+            db_cursor.close()
             return redirect(url_for("home.index"))
     return render_template("home/edit_book.html", book=book)
 
@@ -221,19 +233,21 @@ def edit_book(id):
 @bp.route("/<int:id>/return_book", methods=["GET"])
 @login_required
 def return_book(id):
-    db = get_db()
-    db.execute(
+    db = get_db("write")
+    db_cursor = db.cursor()
+    db_cursor.execute(
         """
         UPDATE 
             checkout_log
         SET
             returned = True
         WHERE
-            book_id = ?
+            book_id = %s
     """,
         [id],
     )
     db.commit()
+    db_cursor.close()
 
     return redirect(url_for("home.index"))
 
@@ -245,11 +259,14 @@ def delete_book(id):
     book.inflate_by_id(id)
 
     if book.id is not None:
-        db = get_db()
-        db.execute("UPDATE book SET deleted = TRUE WHERE id = ?", [id])
+        db = get_db("write")
+        db_cursor = db.cursor()
+        db_cursor.execute("UPDATE book SET deleted = TRUE WHERE id = %s", [id])
+        db_cursor.execute(
+            "UPDATE user_book_tag SET deleted = TRUE WHERE book_id = %s", [id]
+        )
         db.commit()
-        db.execute("UPDATE user_book_tag SET deleted = TRUE WHERE book_id = ?", [id])
-        db.commit()
+        db_cursor.close()
         return redirect(url_for("home.index"))
 
 
@@ -302,8 +319,9 @@ def book_details(id):
     author_resp = client.get_author_from_work(book_resp)
 
     db = get_db()
+    db_cursor = db.cursor()
 
-    fetched_tags = db.execute(
+    db_cursor.execute(
         """
             SELECT
                 id,
@@ -313,10 +331,12 @@ def book_details(id):
                 user_book_tag
             WHERE
                 deleted = FALSE
-                AND book_id = ?
+                AND book_id = %s
             """,
         [id],
-    ).fetchall()
+    )
+    fetched_tags = db_cursor.fetchall()
+    db_cursor.close()
 
     try:
         book.author_links = author_resp.links
@@ -333,11 +353,10 @@ def search_book():
     search_criteria = request.form["search_criteria"]
     if search_criteria != "":
         db = get_db()
-        print("search")
+        db_cursor = db.cursor()
         if search_type == "isbn":
             try:
-                print("isbn search")
-                books = db.execute(
+                db_cursor.execute(
                     """
                     SELECT 
                         book.id as id, 
@@ -355,16 +374,17 @@ def search_book():
                     WHERE
                         book.deleted = FALSE
                         AND author.deleted = FALSE
-                        AND isbn = ?
+                        AND isbn = %s
                 """,
                     [int(search_criteria)],
-                ).fetchall()
+                )
+                books = db_cursor.fetchall()
+                db_cursor.close()
                 return render_template("home/index.html", books=books)
             except ValueError:
                 error = f"{search_criteria} is not a ISBN."
                 flash(error)
         elif search_type == "title":
-            print("title search")
             criteria_split = search_criteria.split(" ")
             where_clause = " AND ("
             for index, word in enumerate(criteria_split):
@@ -392,7 +412,9 @@ def search_book():
                 + ")"
             )
             print(sql)
-            books = db.execute(sql).fetchall()
+            db_cursor.execute(sql)
+            books = db_cursor.fetchall()
+            db_cursor.close()
             print(books)
             return render_template("home/index.html", books=books)
 

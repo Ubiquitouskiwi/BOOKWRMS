@@ -1,4 +1,6 @@
 import sqlite3
+import psycopg
+from psycopg.rows import dict_row
 
 import os
 import random
@@ -9,14 +11,32 @@ import click
 from flask import current_app, g
 
 
-def get_db():
+def get_db(conn_type="read"):
     if "db" not in g:
-        g.db = sqlite3.connect(
-            current_app.config["DATABASE"], detect_types=sqlite3.PARSE_DECLTYPES
-        )
-        g.db.row_factory = sqlite3.Row
-
-    return g.db
+        if conn_type == "read":
+            g.db_read = psycopg.connect(
+                dbname=os.environ["READ_DB_NAME"],
+                user=os.environ["READ_DB_USER"],
+                password=os.environ["READ_DB_PASS"],
+                host=os.environ["DB_HOST"],
+                port=os.environ["DB_PORT"],
+                sslmode=os.environ["DB_SSL_MODE"],
+                row_factory=dict_row,
+            )
+            return g.db_read
+        elif conn_type == "write":
+            g.db_write = psycopg.connect(
+                dbname=os.environ["WRITE_DB_NAME"],
+                user=os.environ["WRITE_DB_USER"],
+                password=os.environ["WRITE_DB_PASS"],
+                host=os.environ["DB_HOST"],
+                port=os.environ["DB_PORT"],
+                sslmode=os.environ["DB_SSL_MODE"],
+                row_factory=dict_row,
+            )
+            return g.db_write
+        else:
+            return None
 
 
 def close_db(e=None):

@@ -12,6 +12,7 @@ from flask import (
 )
 from werkzeug.security import check_password_hash, generate_password_hash
 from flaskr.data_store.db import get_db
+from psycopg import IntegrityError
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 
@@ -23,9 +24,10 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = (
-            get_db().execute("SELECT * FROM user WHERE id = ?", [user_id]).fetchone()
-        )
+        db = get_db()
+        db_cursor = db.cursor()
+        results = db_cursor.execute("SELECT * FROM account WHERE id = %s", [user_id])
+        g.user = db_cursor.fetchone()
 
 
 @bp.route("/register", methods=["GET", "POST"])
@@ -38,7 +40,8 @@ def register():
         password = request.form["password"]
         password_confirm = request.form["confirm_password"]
         invite_code = request.form["invite_code"]
-        db = get_db()
+        write_db = get_db("write")
+        read_db = get_db("read")
 
         if not first_name:
             error = "First name is required."
@@ -54,32 +57,34 @@ def register():
             error = "Must have invite code to register."
 
         if error is None:
-            invite_code_id = db.execute(
-                "SELECT id FROM invite_code WHERE code = ? AND valid = ? AND deleted = ?",
-                [invite_code, True, False],
-            ).fetchone()["id"]
+            db_read_cursor = read_db.cursor()
+            db_read_cursor.execute(
+                "SELECT id FROM invite_code WHERE code = %s AND used = %s AND deleted = %s",
+                [invite_code, False, False],
+            )
+            invite_code_id = db_read_cursor.fetchone()["id"]
             if invite_code_id is not None:
                 hashed_pass = hash_password(password)
+                db_write_cursor = write_db.cursor()
                 try:
-                    db.execute(
-                        "INSERT INTO login (email, password) VALUES (?, ?)",
-                        (email, hashed_pass),
+                    db_write_cursor.execute(
+                        "INSERT INTO login (email, pass) VALUES (%s, %s)",
+                        (email, hashed_pass.decode("utf8")),
                     )
-                    db.commit()
-                    db.execute(
-                        "INSERT INTO user (first_name, last_name, email, is_admin) values (?, ?, ?, ?)",
+                    db_write_cursor.execute(
+                        "INSERT INTO account (first_name, last_name, email, is_admin) values (%s, %s, %s, %s)",
                         (first_name.lower(), last_name.lower(), email, True),
                     )
-                    db.commit()
-
-                    db.execute(
-                        "UPDATE invite_code SET valid = FALSE, user_email = ?, modify_date = CURRENT_TIMESTAMP WHERE id = ?",
+                    db_write_cursor.execute(
+                        "UPDATE invite_code SET used = TRUE, user_email = %s, used_date = CURRENT_TIMESTAMP WHERE id = %s",
                         [email, invite_code_id],
                     )
-                    db.commit()
+                    write_db.commit()
+                    db_write_cursor.close()
+                    db_read_cursor.close()
 
                     return redirect(url_for("auth.login"))
-                except db.IntegrityError:
+                except IntegrityError:
                     error = f"{first_name} {last_name} is already registered"
         flash(error)
     return render_template("auth/register.html")
@@ -90,7 +95,7 @@ def login():
     if request.method == "POST":
         email = request.form["email"]
         plain_text_password = request.form["password"]
-        db = get_db()
+        read_db = get_db("read")
         error = None
 
         if not email:
@@ -99,14 +104,15 @@ def login():
             error = "Must provide password"
 
         if error is None:
-            login_account_pass = db.execute(
-                "SELECT password FROM login WHERE email = ?", (email,)
-            ).fetchone()
+            db_read_cursor = read_db.cursor()
+            db_read_cursor.execute("SELECT pass FROM login WHERE email = %s", [email])
+            login_account_pass = db_read_cursor.fetchone()
             if login_account_pass:
-                if check_password(plain_text_password, login_account_pass["password"]):
-                    user_account_id = db.execute(
-                        "SELECT id FROM user WHERE email = ?", (email,)
-                    ).fetchone()
+                if check_password(plain_text_password, login_account_pass["pass"]):
+                    db_read_cursor.execute(
+                        "SELECT id FROM account WHERE email = %s", [email]
+                    )
+                    user_account_id = db_read_cursor.fetchone()
                     session.clear()
                     session["user_id"] = user_account_id["id"]
                     return redirect(url_for("index"))
@@ -131,7 +137,9 @@ def hash_password(plain_text_password):
 
 def check_password(plain_text_password, hashed_pass):
     # Salt value was saved into hash itself
-    return bcrypt.checkpw(plain_text_password.encode("utf8"), hashed_pass)
+    return bcrypt.checkpw(
+        plain_text_password.encode("utf8"), hashed_pass.encode("utf8")
+    )
 
 
 def login_required(view):
@@ -143,3 +151,5 @@ def login_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
+    # TODO: create db read and db write connect and switch between them
