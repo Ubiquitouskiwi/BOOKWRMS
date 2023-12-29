@@ -18,7 +18,8 @@ class Author(BaseObject):
         self.olid = olid
 
         # Private fields
-        self._db = None
+        self._write_db = None
+        self._read_db = None
         self._inflate_query_base = """
             SELECT
                 *
@@ -35,22 +36,23 @@ class Author(BaseObject):
             INSERT INTO
                 author (first_name, middle_name, last_name, olid)
             VALUES
-                (?, ?, ?, ?)
+                (%s, %s, %s, %s)
         """
         query_params = [self.first_name, self.middle_name, self.last_name, self.olid]
 
-        self._check_db()
-        self._db.execute(query, query_params)
-        self._db.commit()
+        self._check_db("write")
+        self._write_db_cursor.execute(query, query_params)
+        self._write_db.commit()
+        self._write_db_cursor.close()
 
     def inflate_by_name(self, first_name, last_name):
-        where_clause = "first_name = ? AND last_name = ?"
+        where_clause = "first_name = %s AND last_name = %s"
         query = self._inflate_query_base.format(where_clause)
         query_params = [first_name, last_name]
         self._inflate(query, query_params)
 
     def inflate_by_olid(self, author_olid):
-        where_clause = "olid = ?"
+        where_clause = "olid = %s"
         query = self._inflate_query_base.format(where_clause)
         query_params = author_olid
         print(query)
@@ -58,16 +60,23 @@ class Author(BaseObject):
         self._inflate(query, [query_params])
 
     def _inflate(self, query, query_params):
-        self._check_db()
-        retrieved_author = self._db.execute(query, query_params).fetchone()
+        self._check_db("read")
+        self._db_read_cursor.execute(query, query_params)
+        retrieved_author = self._db_read_cursor.fetchone()
         self.id = retrieved_author["id"]
         self.first_name = retrieved_author["first_name"]
         self.last_name = retrieved_author["last_name"]
         self.olid = retrieved_author["olid"]
 
-    def _check_db(self):
-        if not self._db:
-            self._db = get_db()
+    def _check_db(self, conn_type="read"):
+        if conn_type == "read":
+            if not self._read_db:
+                self._read_db = get_db()
+                self._db_read_cursor = self._read_db.cursor()
+        elif conn_type == "write":
+            if not self._write_db:
+                self._write_db = get_db("write")
+                self._write_db_cursor = self._write_db.cursor()
 
     def _error_check(self):
         if type(self.first_name) is not type(str):

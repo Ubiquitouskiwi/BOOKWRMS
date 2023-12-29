@@ -1,136 +1,75 @@
-/* OLD DB CREANUP */
-DROP TABLE IF EXISTS author;
+create table if not exists author (
+    id serial primary key,
+    first_name varchar(75) not null,
+    middle_name varchar(75),
+    last_name varchar(75) not null,
+    olid varchar(20),
+    created_at timestamp not null default CURRENT_TIMESTAMP,
+    deleted bool not null default false
+);
 
-DROP TABLE IF EXISTS book;
+create table if not exists book (
+    id serial primary key,
+    title varchar(100) not null,
+    author_id serial not null,
+    isbn int8 unique not null,
+    illustration_url varchar(255) not null,
+    olid varchar(20),
+    created_at timestamp not null default CURRENT_TIMESTAMP,
+    deleted bool not null default false,
+    foreign key (author_id) references author (id)
+);
 
-DROP TABLE IF EXISTS user;
+create table if not exists account (
+    id serial primary key,
+    first_name varchar(75) not null,
+    last_name varchar(75) not null,
+    email varchar(255) unique not null,
+    is_admin bool not null,
+    created_at timestamp not null default CURRENT_TIMESTAMP,
+    deleted bool not null default false
+);
 
-DROP TABLE IF EXISTS checkout_log;
+create table if not exists login (
+    id serial primary key,
+    email varchar(255) unique not null,
+    pass varchar(255) not null,
+    created_at timestamp not null default CURRENT_TIMESTAMP,
+    deleted bool not null default false
+);
 
-DROP TABLE IF EXISTS login;
+create table if not exists checkout_log (
+    id serial primary key,
+    book_id serial not null,
+    patron_name varchar(100) not null,
+    checkout_date timestamp not null,
+    checkout_duration smallint not null,
+    checkin_date timestamp,
+    renew_count smallint not null default 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    foreign key (book_id) references book (id)
+);
 
-DROP TABLE IF EXISTS library;
-
-DROP TABLE IF EXISTS library_book;
-
-DROP TABLE IF EXISTS patron;
-
-DROP TABLE IF EXISTS invite_code;
-
-DROP TABLE IF EXISTS user_book_tag;
-
-/* TABLE CREATION */
-/* table that has author information. OLID is ID for open library */
-CREATE TABLE author (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name TEXT NOT NULL,
-    middle_name TEXT,
-    last_name TEXT NOT NULL,
-    olid TEXT,
+create table if not exists invite_code (
+    id serial primary key,
+    code varchar(6) not null,
+    used bool not null default false,
+    user_email varchar(255),
+    used_date timestamp,
+    created_by varchar(255) NOT NULL default 'system',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-/* table that holds book info. OLID is ID for open library */
-CREATE TABLE book (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    author_id INTEGER NOT NULL,
-    isbn INTEGER NOT NULL,
-    illustration_url TEXT NOT NULL,
-    olid TEXT,
+create table if not exists user_book_tag (
+    id serial primary key,
+    book_id serial not null,
+    user_id serial not null,
+    tag_value varchar(50) not null,
+    tag_color varchar(7) not null default '#000000',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (author_id) REFERENCES author (id),
-    UNIQUE(isbn)
-);
-
-/* table that has user info. All users are admins who can add/edit/checkout books */
-CREATE TABLE user (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name TEXT NOT NULL,
-    last_name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    is_admin BOOLEAN NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE (email)
-);
-
-/* table that holds login info. used for login */
-CREATE TABLE login (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT NOT NULL,
-    password TEXT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE(email)
-);
-
-CREATE TABLE checkout_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    book_id INTEGER NOT NULL,
-    patron_name TEXT NOT NULL,
-    checkout_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    checkout_duration INTEGER NOT NULL,
-    checkin_date TIMESTAMP,
-    renew_count INTEGER NOT NULL DEFAULT 0,
-    returned BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (book_id) REFERENCES book (id)
-);
-
-/* NOT USED: table that adds ability for more that one person to have a library */
-CREATE TABLE library (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    user_id INTEGER NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSe,
-    FOREIGN KEY (user_id) REFERENCES user (id)
-);
-
-/* NOT USED: table that marries books to the library */
-CREATE TABLE library_book (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    library_id INTEGER NOT NULL,
-    book_id INTEGER NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-/* NOT USED: table that holds patron data (people who use library) */
-CREATE TABLE patron (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    first_name TEXT NOT NULL,
-    last_Name TEXT NOT NULL,
-    email TEXT NOT NULL,
-    library_card_number INTEGER,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-/* Table for invite codes so not everyone can make an account */
-CREATE TABLE invite_code (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    code TEXT NOT NULL,
-    valid BOOLEAN NOT NULL DEFAULT TRUE,
-    user_email TEXT,
-    modify_date TIMESTAMP,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE
-);
-
-/* Tags to add to books. e.g. Read, Recommended, Sci-fi */
-CREATE TABLE user_book_tag (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    book_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    tag_value TEXT NOT NULL,
-    tag_color TEXT NOT NULL DEFAULT "white",
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (user_id) REFERENCES user (id),
-    FOREIGN KEY (book_id) REFERENCES book (id)
+    deleted BOOLEAN NOT NULL DEFAULT false,
+    foreign key (book_id) references book (id),
+    foreign key (user_id) references account (id)
 );

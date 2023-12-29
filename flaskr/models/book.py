@@ -23,7 +23,8 @@ class Book(BaseObject):
         self.checkout_log = checkout_log
 
         # Private fields
-        self._db = None
+        self._read_db = None
+        self._write_db = None
         self._db_cursor = None
         self._inflate_query_base = """
             SELECT
@@ -46,14 +47,14 @@ class Book(BaseObject):
         """
 
     def save(self):
-        self._check_db()
+        self._check_db("write")
         query = """
                 INSERT INTO
                     book (title, author_id, isbn, illustration_url)
                 VALUES
-                    (?, ?, ?, ?)
+                    (%s, %s, %s, %s)
                 ON CONFLICT(isbn) DO UPDATE SET 
-                    title = ?, author_id = ?, isbn = ?, illustration_url = ?, DELETED = ?
+                    title = %s, author_id = %s, isbn = %s, illustration_url = %s, DELETED = %s
                 """
         query_params = [
             self.title,
@@ -66,30 +67,32 @@ class Book(BaseObject):
             self.cover_url,
             False,
         ]
-        self._db.execute(query, query_params)
-        self._db.commit()
+        self._write_db_cursor.execute(query, query_params)
+        self._write_db.commit()
+        self._write_db_cursor.close()
 
     def inflate_by_id(self, id):
-        where_clause = "book.id = ?"
+        where_clause = "book.id = %s"
         query = self._inflate_query_base.format(where_clause)
         query_params = [id]
         self._inflate(query, query_params)
 
     def inflate_by_isbn(self, isbn):
-        where_clause = "book.isbn = ?"
+        where_clause = "book.isbn = %s"
         query = self._inflate_query_base.format(where_clause)
         query_params = [isbn]
         self._inflate(query, query_params)
 
     def inflate_by_title(self, title):
-        where_clause = "book.title = ?"
+        where_clause = "book.title = %s"
         query = self._inflate_query_base.format(where_clause)
         query_params = [title]
         self._inflate(query, query_params)
 
     def _inflate(self, query, query_params):
         self._check_db()
-        retrieved_book = self._db.execute(query, query_params).fetchone()
+        self._db_read_cursor.execute(query, query_params)
+        retrieved_book = self._db_read_cursor.fetchone()
 
         self.id = retrieved_book["id"]
         self.title = retrieved_book["title"]
@@ -105,7 +108,7 @@ class Book(BaseObject):
         self._inflate_checkout()
 
     def _inflate_checkout(self):
-        self._check_db()
+        self._check_db("read")
         checkout_log = []
         query = """
             SELECT
@@ -119,10 +122,11 @@ class Book(BaseObject):
                 checkout_log cl
             WHERE
                 cl.deleted = false
-                AND cl.book_id = ?
+                AND cl.book_id = %s
         """
         query_params = [self.id]
-        results = self._db.execute(query, query_params)
+        results = self._db_read_cursor.execute(query, query_params)
+        results = self._db_read_cursor.fetchall()
         for row in results:
             calc_return = timedelta(days=row["checkout_duration"])
             calc_return = row["checkout_date"] + calc_return
@@ -138,10 +142,17 @@ class Book(BaseObject):
                 }
             )
         self.checkout_log = checkout_log
+        self._db_read_cursor.close()
 
-    def _check_db(self):
-        if not self._db:
-            self._db = get_db()
+    def _check_db(self, conn_type="read"):
+        if conn_type == "read":
+            if not self._read_db:
+                self._read_db = get_db()
+                self._db_read_cursor = self._read_db.cursor()
+        elif conn_type == "write":
+            if not self._write_db:
+                self._write_db = get_db("write")
+                self._write_db_cursor = self._write_db.cursor()
 
     def _error_check(self):
         if type(self.id) is not type(int):

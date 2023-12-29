@@ -63,25 +63,25 @@
                     class="btn btn-outline-success button-link add-tag-button btn-sm" data-bs-target="#add-tag-modal"
                     data-bs-toggle="modal" title="Add tag"><i class="bi bi-tag"></i></button>
                 {% endif %}
-                {% for book_id in tags %}
-                {% if book_id == book['id'] %}
-                {% for tag in tags[book_id] %}
+                {% if tags|length != 0 %}
+                {% if tags[book['id']] %}
+                {% for tag in tags[book['id']] %}
                 <a href="/tag/{{ tag['id'] }}/delete-tag" title="Click to delete"><img
                         src="https://img.shields.io/badge/{{ tag['tag_value'] }}-{{ tag['tag_color'] }}.svg?logo=book"></a>
                 {% endfor %}
                 {% endif %}
-                {% endfor %}
+                {% endif %}
             </div>
             <div class="card-body">
                 <h5 class="card-title"><u>{{ book['title'] }}</u></h5>
-                <p class="card-subtitle mb-1 text-muted">By: {{ book['first_name'] }} {{ book['last_name']}}</h6>
+                <p class="card-subtitle mb-1 text-muted">By: {{ book['first_name'] }} {{ book['last_name']}}</p>
                 <p class="card-subtitle mb-1 text-muted">ISBN: {{ book['isbn'] }}</p>
                 <a class="card-link" href="{{ url_for('home.book_details', id=book['id']) }}">More Info</a>
                 {% if g.user['is_admin'] %}
                 <a class="card-link" href="{{ url_for('home.edit_book', id=book['id']) }}">Edit Book</a>
                 <hr />
                 <a class="card-link" href="{{ url_for('home.checkout_book', id=book['id']) }}">Check Out</a>
-                <a class="card-link" href="{{ url_for('home.checkout_book', id=book['id']) }}">Return</a>
+                <a class="card-link" href="/{{ book['id'] }}/return_book">Return</a>
                 {% endif %}
             </div>
             <div class="card-footer text-muted text-center" style="color:green;">

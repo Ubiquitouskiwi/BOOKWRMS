@@ -24,7 +24,10 @@ class Checkout(BaseObject):
         self.checkin_date = checkin_date
 
         # Private fields
-        self._db = None
+        self._write_db = None
+        self._read_db = None
+        self._read_db_cursor = None
+        self._write_db_cursor = None
         self._inflate_query_base = """
             SELECT
                 *
@@ -46,32 +49,35 @@ class Checkout(BaseObject):
         checkout_duration = diff.days
         query = """
             INSERT INTO
-                checkout_log (book_id, patron_name, checkout_duration, checkin_date, renew_count)
+                checkout_log (book_id, patron_name, checkout_date, checkout_duration, checkin_date, renew_count)
             VALUES
-                (?, ?, ?, ?, ?)
+                (%s, %s, %s, %s, %s, %s)
         """
         query_params = [
             self.book_id,
             self.patron_name,
+            today,
             checkout_duration,
             self.checkin_date,
             self.renew_count,
         ]
 
-        self._check_db()
-        self._db.execute(query, query_params)
-        self._db.commit()
+        self._check_db("write")
+        self._write_db_cursor.execute(query, query_params)
+        self._write_db.commit()
+        self._write_db_cursor.close()
         print("Done Checking out")
 
     def inflate_by_id(self, id):
-        where_clause = "id = ?"
+        where_clause = "id = %s"
         query = self._inflate_query_base.format(where_clause)
         query_params = [id]
         self._inflate(query, query_params)
 
     def _inflate(self, query, query_params):
         self._check_db()
-        retrieved_checkout = self._db.execute(query, query_params).fetchone()
+        self._write_db_cursor.execute(query, query_params)
+        retrieved_checkout = self._write_db_cursor.fetchone()
         self.id = retrieved_checkout["id"]
         self.book_id = retrieved_checkout["book_id"]
         self.checkout_date = retrieved_checkout["checkout_date"]
@@ -79,9 +85,15 @@ class Checkout(BaseObject):
         self.checkin_date = retrieved_checkout["checkin_date"]
         self.renew_count = retrieved_checkout["renew_count"]
 
-    def _check_db(self):
-        if not self._db:
-            self._db = get_db()
+    def _check_db(self, conn_type="read"):
+        if conn_type == "read":
+            if not self._read_db:
+                self._read_db = get_db()
+                self._read_db_cursor = self._read_db.cursor()
+        elif conn_type == "write":
+            if not self._write_db:
+                self._write_db = get_db("write")
+                self._write_db_cursor = self._write_db.cursor()
 
     def _error_check(self):
         if type(self.first_name) is not type(str):
