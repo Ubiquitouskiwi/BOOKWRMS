@@ -390,7 +390,7 @@ def search_book():
             for index, word in enumerate(criteria_split):
                 if index > 0:
                     where_clause += " OR "
-                where_clause += f' book.title LIKE "%{word}%" '
+                where_clause += f" book.title ILIKE '%{word}%' "
             sql = (
                 """SELECT 
                 book.id as id, 
