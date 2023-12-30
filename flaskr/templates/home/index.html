@@ -8,6 +8,9 @@
     {% else %}
     <h1 class="display-4">{% block title %}Library{% endblock %}</h1>
     {% endif %}
+    <div>
+        <p class="font-weight-light">Total: {{ books|length }}</p>
+    </div>
     <form method="post" action="/search_book">
         {% with messages = get_flashed_messages() %}
         <p style="color:red;">{{ messages[0] }}</p>
@@ -80,12 +83,19 @@
                 {% if g.user['is_admin'] %}
                 <a class="card-link" href="{{ url_for('home.edit_book', id=book['id']) }}">Edit Book</a>
                 <hr />
+                {% if book['returned'] or book['returned'] is none %}
                 <a class="card-link" href="{{ url_for('home.checkout_book', id=book['id']) }}">Check Out</a>
+                {% else %}
                 <a class="card-link" href="/{{ book['id'] }}/return_book">Return</a>
+                {% endif %}
                 {% endif %}
             </div>
             <div class="card-footer text-muted text-center" style="color:green;">
+                {% if book['returned'] or book['returned'] is none %}
                 Available
+                {% else %}
+                Due {{ book['checkin_date'] }}
+                {% endif %}
             </div>
         </div>
     </div>

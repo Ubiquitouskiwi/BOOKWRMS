@@ -9,43 +9,41 @@
 <body>
     <!-- Scanner JS -->
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
-    <div class="container-fluid">
-        <nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top" role="navigation" aria-current="page">
-            <a class="navbar-brand" href="/" data-bs-toggle="tooltip" data-bs-html="true"
-                title="<b><u>B</u></b>ecca's <b><u>O</u></b>nline <b><u>O</u></b>rganized <b><u>K</u></b>nowledge <b><u>W</u></b>arehouse and <b><u>R</u></b>esource <b><u>M</u></b>anagement <b><u>S</u></b>ystem">
-                <img class="navbar-brand" style="height:50px; width:45px;"
-                    src="https://www.vhv.rs/dpng/d/468-4689561_library-clipart-bookworm-reading-log-clip-art-hd.png">
-                {% if g.user %}Welcome, {{ g.user["first_name"].capitalize() }}!{% else %} BOOKWRMS {% endif %}
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navigation"
-                aria-controls="navigation" aria-expanded="false" aria-label="Toggle Navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navigation">
+    <nav class="navbar navbar-expand-sm navbar-light bg-light sticky-top" role="navigation" aria-current="page">
+        <a class="navbar-brand" href="/" data-bs-toggle="tooltip" data-bs-html="true"
+            title="<b><u>B</u></b>ecca's <b><u>O</u></b>nline <b><u>O</u></b>rganized <b><u>K</u></b>nowledge <b><u>W</u></b>arehouse and <b><u>R</u></b>esource <b><u>M</u></b>anagement <b><u>S</u></b>ystem">
+            <img class="navbar-brand" style="height:50px; width:45px;"
+                src="https://www.vhv.rs/dpng/d/468-4689561_library-clipart-bookworm-reading-log-clip-art-hd.png">
+            {% if g.user %}Welcome, {{ g.user["first_name"].capitalize() }}!{% else %} BOOKWRMS {% endif %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navigation"
+            aria-controls="navigation" aria-expanded="false" aria-label="Toggle Navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navigation">
 
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('home.index') }}">Home</a></li>
-                    {% if g.user %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('home.add_book') }}">Add Book</a>
-                    </li>
-                    {% endif %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('about.index') }}">About</a></li>
-                </ul>
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('home.index') }}">Home</a></li>
+                {% if g.user %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('home.add_book') }}">Add Book</a>
+                </li>
+                {% endif %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('about.index') }}">About</a></li>
+            </ul>
 
-                <ul class="navbar-nav mb-2 mb-lg-0 ">
+            <ul class="navbar-nav mb-2 mb-lg-0 ">
 
-                    {% if g.user %}
-                    <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Log Out</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </nav>
-    </div>
+                {% if g.user %}
+                <li class="nav-item"><a class="nav-link text-danger" href="{{ url_for('auth.logout') }}">Log Out</a>
+                </li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
     <div class="container">
         <header>
             {% block header %}{% endblock %}
