@@ -43,22 +43,45 @@ def index():
                 book.isbn as isbn, 
                 book.illustration_url as illustration_url,
                 author.first_name as first_name,
-                author.last_name as last_name
+                author.last_name as last_name,
+                checkout.returned as returned,
+                checkout.checkin_date as checkin_date
             FROM
                 book book
             JOIN
                 author author
             ON 
                 book.author_id = author.id
+            left join
+                (
+                    select
+                        max(checkout_date) as date, 
+                        book_id,
+                        returned,
+                        checkin_date
+                    from 
+                        checkout_log
+                    where 
+                        returned = false
+                    group by
+                        book_id, returned, checkin_date
+                ) checkout
+            on 
+                checkout.book_id = book.id
             WHERE
                 book.deleted = FALSE
-                AND author.deleted = FALSE
+                AND author.deleted = false
+            ORDER BY
+                book.title
+            asc
         """
     )
     books = db_cursor.fetchall()
     tags = {}
     for book in books:
         tags[book["id"]] = []
+        if book["checkin_date"] is not None:
+            book["checkin_date"] = book["checkin_date"].date().strftime("%m-%d-%Y")
         db_cursor.execute(
             """
             SELECT
@@ -166,7 +189,7 @@ def add_book():
                 if book_resp is not None:
                     author_resp = ol_client.get_author_from_work(book_resp)
                     try:
-                        cover = f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}.jpg"
+                        cover = f"https://covers.openlibrary.org/b/id/{book_resp.covers[0]}-M.jpg"
                     except AttributeError:
                         cover = "https://www.mobileread.com/forums/attachment.php%sattachmentid=111284&d=1378756884"
                     author_name_split = author_resp.name.split(" ")
@@ -410,6 +433,7 @@ def search_book():
                 AND author.deleted = FALSE"""
                 + where_clause
                 + ")"
+                + "ORDER BY book.title ASC"
             )
             print(sql)
             db_cursor.execute(sql)
