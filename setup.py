@@ -21,7 +21,7 @@ setup(
         "contextlib2==21.6.0",
         "docopt==0.6.2",
         "Flask==3.0.0",
-        "gunicorn==21.2.0",
+        "gunicorn==22.0.0",
         "idna==3.4",
         "internetarchive==3.5.0",
         "itsdangerous==2.1.2",
