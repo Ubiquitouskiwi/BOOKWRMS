@@ -38,7 +38,7 @@ setup(
         "pipx==1.2.1",
         "pyzbar==0.1.9",
         "referencing==0.30.2",
-        "requests==2.31.0",
+        "requests==2.32.2",
         "rpds-py==0.12.0",
         "schema==0.7.5",
         "simplejson==3.19.2",
