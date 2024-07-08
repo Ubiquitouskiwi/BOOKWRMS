@@ -45,7 +45,7 @@ setup(
         "tqdm==4.66.3",
         "urllib3==2.0.7",
         "userpath==1.9.1",
-        "Werkzeug==3.0.1",
+        "Werkzeug==3.0.3",
     ],
     dependency_links=["/olclient/"],
 )
