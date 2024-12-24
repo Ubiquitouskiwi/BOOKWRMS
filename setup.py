@@ -25,7 +25,7 @@ setup(
         "idna==3.4",
         "internetarchive==3.5.0",
         "itsdangerous==2.1.2",
-        "Jinja2==3.1.4",
+        "Jinja2==3.1.5",
         "jsonpatch==1.33",
         "jsonpickle==3.0.2",
         "jsonpointer==2.4",
