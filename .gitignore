@@ -1,4 +1,5 @@
 venv/
+dev-env/
 
 *.pyc
 __pychache__/
@@ -12,3 +13,4 @@ htmlcov/
 dist/
 build/
 *.egg-info/
+.env

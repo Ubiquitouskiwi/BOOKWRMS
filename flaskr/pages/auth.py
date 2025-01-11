@@ -1,4 +1,5 @@
 import functools
+from argon2 import PasswordHasher
 import bcrypt
 from flask import (
     Blueprint,
@@ -108,6 +109,7 @@ def login():
             db_read_cursor.execute("SELECT pass FROM login WHERE email = %s", [email])
             login_account_pass = db_read_cursor.fetchone()
             if login_account_pass:
+                "DO BCRYPT FLOW THEN SAVE ARGON PASS"
                 if check_password(plain_text_password, login_account_pass["pass"]):
                     db_read_cursor.execute(
                         "SELECT id FROM account WHERE email = %s", [email]
@@ -137,9 +139,15 @@ def hash_password(plain_text_password):
 
 def check_password(plain_text_password, hashed_pass):
     # Salt value was saved into hash itself
-    return bcrypt.checkpw(
-        plain_text_password.encode("utf8"), hashed_pass.encode("utf8")
-    )
+    isMatch = False
+    if hashed_pass[:1] == "$2":
+        isMatch = bcrypt.checkpw(
+            plain_text_password.encode("utf8"), hashed_pass.encode("utf8")
+        )
+    else:
+        passHasher = PasswordHasher()
+        isMatch = passHasher.verify(hashed_pass, plain_text_password)
+    return isMatch
 
 
 def login_required(view):
