@@ -3,7 +3,7 @@
 
 .beta-link {
     display: inline-block;
-    background-color: #ffc107; /* Bright yellow for attention */
+    background-color: #ffc107 !important; /* Bright yellow for attention */
     color: #212529; /* Dark text for readability */
     padding: 10px 20px;
     border-radius: 5px;
