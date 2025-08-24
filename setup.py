@@ -43,7 +43,7 @@ setup(
         "schema==0.7.5",
         "simplejson==3.19.2",
         "tqdm==4.66.3",
-        "urllib3==2.2.2",
+        "urllib3==2.5.0",
         "userpath==1.9.1",
         "Werkzeug==3.0.6",
     ],
