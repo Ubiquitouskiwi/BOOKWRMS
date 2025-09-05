@@ -23,7 +23,7 @@ setup(
         "Flask==3.0.0",
         "gunicorn==23.0.0",
         "idna==3.4",
-        "internetarchive==3.5.0",
+        "internetarchive==5.5.1",
         "itsdangerous==2.1.2",
         "Jinja2==3.1.6",
         "jsonpatch==1.33",
