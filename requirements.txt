@@ -29,7 +29,7 @@ numpy==1.26.1
 opencv-python==4.8.1.78
 openlibrary-client @ git+https://github.com/internetarchive/openlibrary-client.git@f15ee489ad2718f4276fad58bca78b5844f5b32d
 packaging==23.2
-pillow==10.3.0
+pillow==12.1.1
 pipx==1.2.1
 psycopg==3.1.16
 psycopg-binary==3.1.16
