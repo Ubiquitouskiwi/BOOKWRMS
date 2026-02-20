@@ -20,7 +20,7 @@ setup(
         "colorama==0.4.6",
         "contextlib2==21.6.0",
         "docopt==0.6.2",
-        "Flask==3.0.0",
+        "Flask==3.1.3",
         "gunicorn==23.0.0",
         "idna==3.4",
         "internetarchive==3.5.0",
